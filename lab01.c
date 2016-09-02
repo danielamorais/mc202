@@ -56,33 +56,43 @@ void lerMatriz(Matriz *matriz){
 }
 
 void multiplicarMatriz(Matriz *matrizA, Matriz *matrizB, Matriz *resultado){
-	//Alocar matriz resultado baseado na linha e coluna das matrizes 
-	resultado->linha = matrizA->linha;
-	resultado->coluna = matrizB->coluna;
-	resultado->dados = (int **) malloc(resultado->linha * sizeof(int *));
+	if(matrizA->coluna != matrizB->linha){
+		printf("As matrizes nao seguem as propriedades necessarias para realizar a multiplicacao.");
+	} else{
+		//Alocar matriz resultado baseado na linha e coluna das matrizes 
+		resultado->linha = matrizA->linha;
+		resultado->coluna = matrizB->coluna;
+		resultado->dados = (int **) malloc(resultado->linha * sizeof(int *));
 
-	int *aux = (int *) malloc(resultado->linha * resultado->coluna * sizeof(int)); 
-	for(int i = 0; i < matrizA->coluna; i++){
-		resultado->dados[i] = (int *) malloc(resultado->coluna * sizeof(int));
-	}
-	int operacao = 0;
-	//Executam multiplicao e insere na matriz resultado
-	for(int i = 0; i < matrizA->linha; ++i){
-		for(int j = 0; j < matrizB->coluna; ++j){
-			for(int k = 0; k < matrizA->coluna; ++k) {
-				resultado->dados[i][j] += matrizA->dados[i][k] * (matrizB->dados[k][j]);
+		int *aux = (int *) malloc(resultado->linha * resultado->coluna * sizeof(int)); 
+		for(int i = 0; i < matrizA->coluna; i++){
+			resultado->dados[i] = (int *) malloc(resultado->coluna * sizeof(int));
+		}
+		int operacao = 0;
+		//Executam multiplicao e insere na matriz resultado
+		for(int i = 0; i < matrizA->linha; ++i){
+			for(int j = 0; j < matrizB->coluna; ++j){
+				for(int k = 0; k < matrizA->coluna; ++k) {
+					resultado->dados[i][j] += matrizA->dados[i][k] * (matrizB->dados[k][j]);
+				}
 			}
 		}
-	}
 
-	//Exibir resultado
-	 for(int i = 0; i < resultado->linha; i++){
-                 for(int j = 0; j < resultado->coluna; j++){
-                         printf("%d ", resultado->dados[i][j]);
-                 }
-                 printf("\n");
-         }
-	
+		//Exibir resultado
+		for(int i = 0; i < resultado->linha; i++){
+			for(int j = 0; j < resultado->coluna; j++){
+				printf("%d ", resultado->dados[i][j]);
+			}
+			printf("\n");
+		}
+	}
+}
+
+void liberarMemoria(Matriz *matriz){
+	for(int i = 0; i < matriz->linha; i++){
+		free(matriz->dados[i]);
+	}
+	free(matriz->dados);
 }
 
 int main(){
@@ -95,6 +105,8 @@ int main(){
 		lerMatriz(&matrizA);
 		lerMatriz(&matrizB);
 		multiplicarMatriz(&matrizA, &matrizB, &resultado);
+		liberarMemoria(&matrizA);
+		liberarMemoria(&matrizB);
 		//Liberar memoria
 		//	printf("Tentando liberar...");	
 		//	for(int i = 0; i < matrizA.linha; i++){
