@@ -1,11 +1,13 @@
 /* 
-Daniela Marques de Morais - 169562
-Programa para calcular a multiplicação entre matrizes 
-*/
+   Daniela Marques de Morais - 169562
+   Programa para calcular a multiplicação entre matrizes 
+
+   Lembrar do casting, o ponteiro anda (fscanf) não há nenhum problema 
+   */
 
 #include <stdio.h>
+#include <stdlib.h>
 
-FILE *arquivoA, *arquivoB;
 
 typedef struct matriz {
 	int linha; 
@@ -14,54 +16,68 @@ typedef struct matriz {
 	FILE *arquivo; 
 } Matriz; 
 
-FILE * abrirArquivo(char *nome){
-	FILE *arquivo;
-	arquivo = fopen(nome, "r");
-	if(arquivo == NULL){
+void abrirArquivo(char *nome, Matriz *matriz){
+	matriz->arquivo = fopen(nome, "r");
+	if(matriz->arquivo == NULL){
 		perror("Erro ao abrir arquivo:");
-		return NULL; //fixme 
-	}else{
-		return arquivo; 
 	}
 }
 
-Matriz lerMatriz(Matriz *matriz){
-	int conteudo = 0;
-	int contadorLinhas = 0;   
-	while(fscanf(matriz->arquivo, "%d", &conteudo) != EOF){
-		++contadorLinhas;
-		switch(contadorLinhas){
-			case 1: matriz->linha = conteudo;
-				break;
-			case 2: matriz->coluna = conteudo;
-				int *linha = (int *) malloc(matriz->linha * sizeof(int));
-				for(int i =0; i < matriz->coluna; i++){
-					linha[i] = (int *) malloc(matriz->coluna * sizeof(int);		
-				}
-				matriz->dados = linha; 
-				break;
-			default:
-				
-				break;  
+/* 
+ * Alocar matriz dinamicamente, ler arquivo txt para preencher como elementos da matriz alocada
+ *
+ * */
+void lerMatriz(Matriz *matriz){   
+	printf("%p\n", matriz->arquivo);
+	fscanf(matriz->arquivo, "%d %d", &matriz->linha, &matriz->coluna);
+
+	//Alocar matriz dinamicamente
+	matriz->dados = (int **) malloc(matriz-> linha * sizeof(int *));
+	int i = 0;
+	for(i = 0; i < matriz->linha; i++){
+		matriz->dados[i] = (int *) malloc(matriz->coluna * sizeof(int));
+	}
+
+
+	//Preencher elementos da matriz 
+	for(int i = 0; i < matriz->linha; i++){
+		for(int j = 0; j < matriz->coluna; j++){
+			fscanf(matriz->arquivo, " %d", &matriz->dados[i][j]);
+			printf("Lendo %d \n\n ", matriz->dados[i][j]);
 		}
+	}	
+
+	//Exibir dados
+	for(int i = 0; i < matriz->linha; i++){
+		for(int j = 0; j < matriz->coluna; j++){
+			printf("%d ", matriz->dados[i][j]);
+		}
+		printf("\n");
 	}
-	printf("Linha %d: ", matriz.linha);
-	printf("Coluna %d: ", matriz.coluna);
-	return matriz; 
+	//	rewind(matriz->arquivo);
+	printf("%p\n", matriz->arquivo);
+	fclose(matriz->arquivo);	
+	//	rewind(matriz->arquivo);
 }
 
-void main(){
+int main(){
 	Matriz matrizA;
 	Matriz matrizB;
-	matrizA.arquivo = abrirArquivo("matrizA.txt");
-	matrizB.arquivo = abrirArquivo("matrizB.txt");
+	abrirArquivo("matrizA.txt", &matrizA);
+	abrirArquivo("matrizB.txt", &matrizB);
 	if(matrizA.arquivo != NULL && matrizB.arquivo != NULL){
-		lerMatriz(matrizA.arquivo);
-		lerMatriz(matrizB.arquivo);
-		printf("Deu certo!\n");
-		fclose(matrizA.arquivo);
-		fclose(matrizB.arquivo);		 
+		lerMatriz(&matrizA);
+		//Liberar memoria
+		//	printf("Tentando liberar...");	
+		//	for(int i = 0; i < matrizA.linha; i++){
+		//		free(matrizA.dados[i]);
+		//	}
+		//	printf("passou for..");
+		//	free(matrizA.dados);
+		//fclose(matrizA.arquivo);
+		fclose(matrizB.arquivo);
 	}else{
 		printf("Erro ao acessar arquivo!");
 	}
+	return 0;
 }
