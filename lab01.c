@@ -68,6 +68,14 @@ void multiplicarMatriz(Matriz *matrizA, Matriz *matrizB){
 		for(int i = 0; i < matrizA->coluna; i++){
 			resultado.dados[i] = (int *) malloc(resultado.coluna * sizeof(int));
 		}
+
+		//Inicializar matriz resultado 
+		for(int a = 0; a < resultado.linha; a++){
+			for(int b = 0; b < resultado.coluna; b++){
+				resultado.dados[a][b] = 0;
+			}
+		}
+
 		//Executam multiplicao e insere na matriz resultado
 		for(int linha = 0; linha < matrizA->linha; ++linha){
 			for(int coluna = 0; coluna < matrizB->coluna; ++coluna){
