@@ -1,13 +1,10 @@
 /* 
    Daniela Marques de Morais - 169562
    Programa para calcular a multiplicação entre matrizes 
-
-   Lembrar do casting, o ponteiro anda (fscanf) não há nenhum problema 
    */
 
 #include <stdio.h>
 #include <stdlib.h>
-
 
 typedef struct matriz {
 	int linha; 
@@ -15,6 +12,18 @@ typedef struct matriz {
 	int **dados; 
 	FILE *arquivo; 
 } Matriz; 
+
+void imprimeMatriz(Matriz *matriz){
+	printf("%d %d \n", matriz->linha, matriz->coluna);
+	for(int i = 0; i < matriz->linha; i++){
+		for(int j = 0; j < matriz->coluna; j++){
+			printf("%d ", matriz->dados[i][j]);
+		}
+		printf("\n");
+	}
+
+}
+
 
 void abrirArquivo(char *nome, Matriz *matriz){
 	matriz->arquivo = fopen(nome, "r");
@@ -37,54 +46,37 @@ void lerMatriz(Matriz *matriz){
 		matriz->dados[i] = (int *) malloc(matriz->coluna * sizeof(int));
 	}
 
-
 	//Preencher elementos da matriz 
 	for(int i = 0; i < matriz->linha; i++){
 		for(int j = 0; j < matriz->coluna; j++){
 			fscanf(matriz->arquivo, " %d", &matriz->dados[i][j]);
-			printf("Lendo %d \n\n ", matriz->dados[i][j]);
 		}
 	}	
-
-	//Exibir dados
-	for(int i = 0; i < matriz->linha; i++){
-		for(int j = 0; j < matriz->coluna; j++){
-			printf("%d ", matriz->dados[i][j]);
-		}
-		printf("\n");
-	}
 }
 
-void multiplicarMatriz(Matriz *matrizA, Matriz *matrizB, Matriz *resultado){
+/* Verifica se é possível a multiplicação da matriz e realiza o calculo */
+void multiplicarMatriz(Matriz *matrizA, Matriz *matrizB){
 	if(matrizA->coluna != matrizB->linha){
 		printf("As matrizes nao seguem as propriedades necessarias para realizar a multiplicacao.");
 	} else{
+		Matriz resultado; 
 		//Alocar matriz resultado baseado na linha e coluna das matrizes 
-		resultado->linha = matrizA->linha;
-		resultado->coluna = matrizB->coluna;
-		resultado->dados = (int **) malloc(resultado->linha * sizeof(int *));
+		resultado.linha = matrizA->linha;
+		resultado.coluna = matrizB->coluna;
+		resultado.dados = (int **) malloc(resultado.linha * sizeof(int *));
 
-		int *aux = (int *) malloc(resultado->linha * resultado->coluna * sizeof(int)); 
 		for(int i = 0; i < matrizA->coluna; i++){
-			resultado->dados[i] = (int *) malloc(resultado->coluna * sizeof(int));
+			resultado.dados[i] = (int *) malloc(resultado.coluna * sizeof(int));
 		}
-		int operacao = 0;
 		//Executam multiplicao e insere na matriz resultado
-		for(int i = 0; i < matrizA->linha; ++i){
-			for(int j = 0; j < matrizB->coluna; ++j){
-				for(int k = 0; k < matrizA->coluna; ++k) {
-					resultado->dados[i][j] += matrizA->dados[i][k] * (matrizB->dados[k][j]);
+		for(int linha = 0; linha < matrizA->linha; ++linha){
+			for(int coluna = 0; coluna < matrizB->coluna; ++coluna){
+				for(int aux = 0; aux < matrizA->coluna; ++aux) {
+					resultado.dados[linha][coluna] = resultado.dados[linha][coluna] + matrizA->dados[linha][aux] * (matrizB->dados[aux][coluna]);
 				}
 			}
 		}
-
-		//Exibir resultado
-		for(int i = 0; i < resultado->linha; i++){
-			for(int j = 0; j < resultado->coluna; j++){
-				printf("%d ", resultado->dados[i][j]);
-			}
-			printf("\n");
-		}
+		imprimeMatriz(&resultado);
 	}
 }
 
@@ -98,22 +90,14 @@ void liberarMemoria(Matriz *matriz){
 int main(){
 	Matriz matrizA;
 	Matriz matrizB;
-	Matriz resultado; 
 	abrirArquivo("matrizA.txt", &matrizA);
 	abrirArquivo("matrizB.txt", &matrizB);
 	if(matrizA.arquivo != NULL && matrizB.arquivo != NULL){
 		lerMatriz(&matrizA);
 		lerMatriz(&matrizB);
-		multiplicarMatriz(&matrizA, &matrizB, &resultado);
+		multiplicarMatriz(&matrizA, &matrizB);
 		liberarMemoria(&matrizA);
 		liberarMemoria(&matrizB);
-		//Liberar memoria
-		//	printf("Tentando liberar...");	
-		//	for(int i = 0; i < matrizA.linha; i++){
-		//		free(matrizA.dados[i]);
-		//	}
-		//	printf("passou for..");
-		//	free(matrizA.dados);
 		fclose(matrizA.arquivo);
 		fclose(matrizB.arquivo);
 	}else{
