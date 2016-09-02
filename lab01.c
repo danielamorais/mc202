@@ -28,7 +28,6 @@ void abrirArquivo(char *nome, Matriz *matriz){
  *
  * */
 void lerMatriz(Matriz *matriz){   
-	printf("%p\n", matriz->arquivo);
 	fscanf(matriz->arquivo, "%d %d", &matriz->linha, &matriz->coluna);
 
 	//Alocar matriz dinamicamente
@@ -54,19 +53,48 @@ void lerMatriz(Matriz *matriz){
 		}
 		printf("\n");
 	}
-	//	rewind(matriz->arquivo);
-	printf("%p\n", matriz->arquivo);
-	fclose(matriz->arquivo);	
-	//	rewind(matriz->arquivo);
+}
+
+void multiplicarMatriz(Matriz *matrizA, Matriz *matrizB, Matriz *resultado){
+	//Alocar matriz resultado baseado na linha e coluna das matrizes 
+	resultado->linha = matrizA->linha;
+	resultado->coluna = matrizB->coluna;
+	resultado->dados = (int **) malloc(resultado->linha * sizeof(int *));
+
+	int *aux = (int *) malloc(resultado->linha * resultado->coluna * sizeof(int)); 
+	for(int i = 0; i < matrizA->coluna; i++){
+		resultado->dados[i] = (int *) malloc(resultado->coluna * sizeof(int));
+	}
+	int operacao = 0;
+	//Executam multiplicao e insere na matriz resultado
+	for(int i = 0; i < matrizA->linha; ++i){
+		for(int j = 0; j < matrizB->coluna; ++j){
+			for(int k = 0; k < matrizA->coluna; ++k) {
+				resultado->dados[i][j] += matrizA->dados[i][k] * (matrizB->dados[k][j]);
+			}
+		}
+	}
+
+	//Exibir resultado
+	 for(int i = 0; i < resultado->linha; i++){
+                 for(int j = 0; j < resultado->coluna; j++){
+                         printf("%d ", resultado->dados[i][j]);
+                 }
+                 printf("\n");
+         }
+	
 }
 
 int main(){
 	Matriz matrizA;
 	Matriz matrizB;
+	Matriz resultado; 
 	abrirArquivo("matrizA.txt", &matrizA);
 	abrirArquivo("matrizB.txt", &matrizB);
 	if(matrizA.arquivo != NULL && matrizB.arquivo != NULL){
 		lerMatriz(&matrizA);
+		lerMatriz(&matrizB);
+		multiplicarMatriz(&matrizA, &matrizB, &resultado);
 		//Liberar memoria
 		//	printf("Tentando liberar...");	
 		//	for(int i = 0; i < matrizA.linha; i++){
@@ -74,7 +102,7 @@ int main(){
 		//	}
 		//	printf("passou for..");
 		//	free(matrizA.dados);
-		//fclose(matrizA.arquivo);
+		fclose(matrizA.arquivo);
 		fclose(matrizB.arquivo);
 	}else{
 		printf("Erro ao acessar arquivo!");
