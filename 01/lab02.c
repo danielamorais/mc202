@@ -20,7 +20,7 @@ void inicializarLista(No **lista){
  * Adicionar novo elemento no fim da lista 
  * */
 void adicionarElemento(No **lista, int dado){
-	if(*lista == NULL){
+	if((*(*lista)).prox == NULL){
 		No *novoElemento;
 		novoElemento = malloc(sizeof(No));
 		if (novoElemento == NULL){
@@ -28,25 +28,12 @@ void adicionarElemento(No **lista, int dado){
 			exit(1);
 		}
 		novoElemento->dado = dado; 
-		novoElemento-> prox = (*(*lista)).prox; 
-		(*(*lista)).prox = &novoElemento; //Ira apontar para o primeiro elemento
+		novoElemento-> prox = NULL; 
+		(*(*lista)).prox = novoElemento; //Ira apontar para o primeiro elemento
 	}else{
-		printf("nao eh  IGual, irei acessar %d \n", (*(*lista)).dado);
 		No *aux = (*(*lista)).prox;
 		adicionarElemento(&aux, dado);
-		/*  
-		    while(*aux != NULL){
-		    printf("entrando no while..%d \n", (*(aux->prox)).dado);
-		    aux = (*(aux->prox)).prox;
-		    }
-		    printf("ultimo elemento.. %d\n", aux->dado);	 
-		//Chegou no ultimo elemento
-		novoElemento->prox = NULL;
-		aux->prox = novoElemento;
-		*/	
 	}
-	//novoElemento->prox = *lista; //Ira apontar para null 
-	//*lista = novoElemento; //Ira apontar para novo elemento
 }
 
 /* *
@@ -62,7 +49,10 @@ void liberarMemoria(No **lista){
 	}
 }
 
-void firstElement(No **lista, int dado){
+/*
+ * Adicionar primeiro elemento da lista e fazer o nó (cabeça da lista) deixar de apontar para NULL e apontar para primeiro elemento
+ */
+void addPrimeiroElemento(No **lista, int dado){
 	No *novoElemento;
 	novoElemento = malloc(sizeof(No));
 	if (novoElemento == NULL){
@@ -70,14 +60,12 @@ void firstElement(No **lista, int dado){
 		exit(1);
 	}
 	novoElemento->dado = dado;
-	printf("IGual a NULL\n");
 	novoElemento-> prox = *lista;
 	*lista = novoElemento;
 }
 
 int main(){
 	No *lista, *atual;
-	int dado;  
 	inicializarLista(&lista);
 	//Ler elemento
 	char next_char;
@@ -86,9 +74,8 @@ int main(){
 	while (scanf("%d%c", &number, &next_char) == 2) {
 		/*  some stuff */
 		++k;
-		printf("acesso %d", k);
 		if(k == 1){
-			firstElement(&lista, number);
+			addPrimeiroElemento(&lista, number);
 		}else{
 			adicionarElemento(&lista, number);
 		}
