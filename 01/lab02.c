@@ -8,7 +8,9 @@
 typedef struct No { 
 	int dado;
 	struct No *prox; 
-} No; 
+} No;
+
+int k = 0; 
 
 void inicializarLista(No **lista){
 	*lista = NULL; 
@@ -18,15 +20,33 @@ void inicializarLista(No **lista){
  * Adicionar novo elemento no fim da lista 
  * */
 void adicionarElemento(No **lista, int dado){
-	No *novoElemento;
-	novoElemento = malloc(sizeof(No));
-	if (novoElemento == NULL){
-		printf("Erro ao inserir novo elemento! Problema ao alocar memoria");
-		exit(1);
+	if(*lista == NULL){
+		No *novoElemento;
+		novoElemento = malloc(sizeof(No));
+		if (novoElemento == NULL){
+			printf("Erro ao inserir novo elemento! Problema ao alocar memoria");
+			exit(1);
+		}
+		novoElemento->dado = dado; 
+		novoElemento-> prox = (*(*lista)).prox; 
+		(*(*lista)).prox = &novoElemento; //Ira apontar para o primeiro elemento
+	}else{
+		printf("nao eh  IGual, irei acessar %d \n", (*(*lista)).dado);
+		No *aux = (*(*lista)).prox;
+		adicionarElemento(&aux, dado);
+		/*  
+		    while(*aux != NULL){
+		    printf("entrando no while..%d \n", (*(aux->prox)).dado);
+		    aux = (*(aux->prox)).prox;
+		    }
+		    printf("ultimo elemento.. %d\n", aux->dado);	 
+		//Chegou no ultimo elemento
+		novoElemento->prox = NULL;
+		aux->prox = novoElemento;
+		*/	
 	}
-	novoElemento->dado = dado; 
-	novoElemento->prox = *lista; //Ira apontar para null 
-	*lista = novoElemento; //Ira apontar para novo elemento
+	//novoElemento->prox = *lista; //Ira apontar para null 
+	//*lista = novoElemento; //Ira apontar para novo elemento
 }
 
 /* *
@@ -42,25 +62,45 @@ void liberarMemoria(No **lista){
 	}
 }
 
+void firstElement(No **lista, int dado){
+	No *novoElemento;
+	novoElemento = malloc(sizeof(No));
+	if (novoElemento == NULL){
+		printf("Erro ao inserir novo elemento! Problema ao alocar memoria");
+		exit(1);
+	}
+	novoElemento->dado = dado;
+	printf("IGual a NULL\n");
+	novoElemento-> prox = *lista;
+	*lista = novoElemento;
+}
 
 int main(){
 	No *lista, *atual;
 	int dado;  
 	inicializarLista(&lista);
-	do{
-		scanf("%d ", &dado);
-		if(dado != -1){
-			adicionarElemento(&lista, dado);
-			//exibir valores
-			while(atual != NULL){
-				printf("%d ", atual->dado);
-				atual = atual->prox;
-			}
+	//Ler elemento
+	char next_char;
+	int number;
+
+	while (scanf("%d%c", &number, &next_char) == 2) {
+		/*  some stuff */
+		++k;
+		printf("acesso %d", k);
+		if(k == 1){
+			firstElement(&lista, number);
+		}else{
+			adicionarElemento(&lista, number);
 		}
-	} while (dado != -1);
+		if (next_char == '\n') break;
+	} 
+
+	atual = lista; 
+	//Exibir valores 
 	while(atual != NULL){
 		printf("%d ", atual->dado);
 		atual = atual->prox;
 	}
+
 	return 0; 
 }
