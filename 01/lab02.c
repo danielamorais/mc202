@@ -11,7 +11,11 @@ typedef struct No {
 } No;
 
 int k = 0; 
-
+int m, n, p;
+No *listaUm;
+No *listaDois;
+No *listaTres; 
+ 
 void inicializarLista(No **lista){
 	*lista = NULL; 
 }
@@ -64,13 +68,52 @@ void addPrimeiroElemento(No **lista, int dado){
 	*lista = novoElemento;
 }
 
+void primeiraLista(No **lista){
+	No *aux = *lista;
+	No *inicio = *lista; 
+	No *fim = NULL; 
+	
+	//buscar m	
+	while(aux->dado != m && aux->prox != NULL){
+		aux = aux->prox;
+		if(aux->dado == m) inicio = aux; 
+	}
+
+	//buscar n em sublista 
+	aux = *lista;
+	while(aux->dado != n && aux->prox != NULL){
+		aux = aux->prox;
+		if(aux->dado == n) fim = aux; 
+	}	
+	if(fim == NULL){
+		aux = *lista;
+		while(aux -> dado != p && aux->prox != NULL){
+			aux = aux->prox;
+			if(aux -> dado == p) fim = aux; 
+		}
+		if(fim == NULL){
+			fim = *lista;
+			//percorrer ate o fim o lista
+			while(fim != NULL){
+				if(fim->prox == NULL) break; 
+				fim = fim->prox;  
+			}
+		}
+	}
+	
+	while(inicio != NULL){
+		printf("%d ", inicio->dado);
+		if(inicio->dado == fim->dado) break;
+		inicio = inicio->prox;
+	}
+}
+
 int main(){
 	No *lista, *atual;
 	inicializarLista(&lista);
 	//Ler elemento
 	char next_char;
 	int number;
-
 	while (scanf("%d%c", &number, &next_char) == 2) {
 		/*  some stuff */
 		++k;
@@ -79,15 +122,21 @@ int main(){
 		}else{
 			adicionarElemento(&lista, number);
 		}
-		if (next_char == '\n') break;
-	} 
+		//Leitura de m, n e p
+		if (next_char == '\n'){
+			scanf("%d %d %d", &m, &n, &p);
+			break; 
+		}
+	}
 
+	primeiraLista(&lista);
 	atual = lista; 
-	//Exibir valores 
+	//Exibir valores
+	printf("original "); 
 	while(atual != NULL){
 		printf("%d ", atual->dado);
 		atual = atual->prox;
 	}
-
+	printf("\nm=%d, n=%d, p=%d\n", m, n, p);
 	return 0; 
 }
