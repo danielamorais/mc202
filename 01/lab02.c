@@ -78,21 +78,40 @@ void imprimirLista(No **inicio, No **fim){
 	}
 }
 
+void terceiraLista(No **inicio, No **fim, No **listaOriginal){
+	No *auxInicio = *fim;
+	No *auxFim = *listaOriginal;
+	if(auxInicio->dado != p){
+		auxInicio = *inicio;
+	}
+	printf("\nterceira ");
+	imprimirLista(&auxInicio, &auxFim);
+}
+
 void segundaLista(No **inicio, No **fim, No **listaOriginal){
 	No *auxInicio = *inicio; 
-	No *auxFim = *fim;
+	No *auxFim = *inicio;
 	No *auxOriginal = *listaOriginal;
 
 	//buscar n
-	if(auxFim->dado == n){
+	if((*fim)->dado == n){
 		auxInicio = *fim;
 	}else{
 		//comecar da mesma posicao de inicio da primeira sublista
 		auxInicio = *inicio;
 	}
-	if((*inicio)->dado == p){
-		auxFim = *inicio;	
-	}else{
+	int encontrouP = 0;
+	//buscar p a apartir do inicio da sublista 
+	while(auxFim->dado != p && auxFim->prox != NULL){
+		auxFim = auxFim->prox;
+		if(auxFim->dado == p){
+			encontrouP = 1;
+			break; 
+		}
+	}		
+
+	if (encontrouP == 0){
+		auxFim = *listaOriginal;
 		//terminar no fim da lista original
 		while(auxFim != NULL){
 			if(auxFim->prox == NULL){
@@ -103,7 +122,7 @@ void segundaLista(No **inicio, No **fim, No **listaOriginal){
 	}
 	printf("\nsegunda ");
 	imprimirLista(&auxInicio, &auxFim);
-
+	terceiraLista(&auxInicio, &auxFim, &auxOriginal);
 }
 
 void primeiraLista(No **lista){
@@ -114,15 +133,24 @@ void primeiraLista(No **lista){
 	//buscar m	
 	while(aux->dado != m && aux->prox != NULL){
 		aux = aux->prox;
-		if(aux->dado == m) inicio = aux; 
+		if(aux->dado == m){
+			inicio = aux;
+			break;
+		}  
 	}
-
-	//buscar n em sublista 
+	aux = inicio;
+	//buscar n em sublista
+	printf("aux dado %d \n", aux->dado); 
 	while(aux->dado != n && aux->prox != NULL){
 		aux = aux->prox;
-		if(aux->dado == n) fim = aux; 
+		printf("Buscando em while.. %d \n", aux->dado);
+		if(aux->dado == n){
+			fim = aux;
+			break;
+		} 
 	}	
 	if(fim == NULL){
+		printf("Entrou no fim null");
 		aux = *lista;
 		while(aux -> dado != p && aux->prox != NULL){
 			aux = aux->prox;
@@ -150,7 +178,6 @@ int main(){
 	char next_char;
 	int number;
 	while (scanf("%d%c", &number, &next_char) == 2) {
-		/*  some stuff */
 		++k;
 		if(k == 1){
 			addPrimeiroElemento(&lista, number);
@@ -158,7 +185,7 @@ int main(){
 			adicionarElemento(&lista, number);
 		}
 		//Leitura de m, n e p
-		if (next_char == '\n'){
+		if (next_char == '\n' || next_char == '\r'){
 			scanf("%d %d %d", &m, &n, &p);
 			break; 
 		}
