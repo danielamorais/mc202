@@ -15,7 +15,7 @@ int m, n, p;
 No *listaUm;
 No *listaDois;
 No *listaTres; 
- 
+
 void inicializarLista(No **lista){
 	*lista = NULL; 
 }
@@ -68,11 +68,52 @@ void addPrimeiroElemento(No **lista, int dado){
 	*lista = novoElemento;
 }
 
+void imprimirLista(No **inicio, No **fim){
+	No *auxInicio = *inicio;
+	No *auxFim = *fim;
+	while(auxInicio != NULL){
+		printf("%d ", auxInicio->dado);
+		if(auxInicio->dado == auxFim->dado) break;
+		auxInicio = auxInicio->prox;
+	}
+}
+
+void segundaLista(No **inicio, No **fim, No **listaOriginal){
+	No *auxInicio = *inicio; 
+	No *auxFim = *fim;
+	No *auxOriginal = *listaOriginal;
+
+	//buscar n
+	printf("not equal %d", (auxFim->prox)->dado);
+	if(auxFim->dado == n){
+		printf("Eh igual a n \n");
+		auxInicio = *fim;
+	}else{
+		//comecar da mesma posicao de inicio da primeira sublista
+		auxInicio = *inicio;
+	}
+	printf("inicio %d depois %d", auxInicio->dado, (auxInicio->prox)->dado);
+	if((*inicio)->dado == p){
+		auxFim = *inicio;	
+	}else{
+		//terminar no fim da lista original
+		while(auxFim != NULL){
+			if(auxFim->prox == NULL){
+				break;
+			}
+			auxFim = auxFim->prox;
+		}	
+	}
+	printf("segunda ");
+	imprimirLista(&auxInicio, &auxFim);
+
+}
+
 void primeiraLista(No **lista){
 	No *aux = *lista;
 	No *inicio = *lista; 
 	No *fim = NULL; 
-	
+
 	//buscar m	
 	while(aux->dado != m && aux->prox != NULL){
 		aux = aux->prox;
@@ -100,13 +141,13 @@ void primeiraLista(No **lista){
 			}
 		}
 	}
-	
-	while(inicio != NULL){
-		printf("%d ", inicio->dado);
-		if(inicio->dado == fim->dado) break;
-		inicio = inicio->prox;
-	}
+	printf("fim first.. %d", (fim->prox)->dado);
+	printf("primeira ");
+	imprimirLista(&inicio, &fim);
+	printf("fim.. %d", (fim->prox)->dado);
+	segundaLista(&inicio, &fim, &(*lista));
 }
+
 
 int main(){
 	No *lista, *atual;
@@ -129,7 +170,6 @@ int main(){
 		}
 	}
 
-	primeiraLista(&lista);
 	atual = lista; 
 	//Exibir valores
 	printf("original "); 
@@ -138,5 +178,6 @@ int main(){
 		atual = atual->prox;
 	}
 	printf("\nm=%d, n=%d, p=%d\n", m, n, p);
+	 primeiraLista(&lista);
 	return 0; 
 }
