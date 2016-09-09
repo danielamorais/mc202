@@ -84,15 +84,12 @@ void segundaLista(No **inicio, No **fim, No **listaOriginal){
 	No *auxOriginal = *listaOriginal;
 
 	//buscar n
-	printf("not equal %d", (auxFim->prox)->dado);
 	if(auxFim->dado == n){
-		printf("Eh igual a n \n");
 		auxInicio = *fim;
 	}else{
 		//comecar da mesma posicao de inicio da primeira sublista
 		auxInicio = *inicio;
 	}
-	printf("inicio %d depois %d", auxInicio->dado, (auxInicio->prox)->dado);
 	if((*inicio)->dado == p){
 		auxFim = *inicio;	
 	}else{
@@ -104,7 +101,7 @@ void segundaLista(No **inicio, No **fim, No **listaOriginal){
 			auxFim = auxFim->prox;
 		}	
 	}
-	printf("segunda ");
+	printf("\nsegunda ");
 	imprimirLista(&auxInicio, &auxFim);
 
 }
@@ -121,7 +118,6 @@ void primeiraLista(No **lista){
 	}
 
 	//buscar n em sublista 
-	aux = *lista;
 	while(aux->dado != n && aux->prox != NULL){
 		aux = aux->prox;
 		if(aux->dado == n) fim = aux; 
@@ -141,10 +137,8 @@ void primeiraLista(No **lista){
 			}
 		}
 	}
-	printf("fim first.. %d", (fim->prox)->dado);
 	printf("primeira ");
 	imprimirLista(&inicio, &fim);
-	printf("fim.. %d", (fim->prox)->dado);
 	segundaLista(&inicio, &fim, &(*lista));
 }
 
