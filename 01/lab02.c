@@ -81,6 +81,9 @@ void imprimirLista(No **inicio, No **fim){
 void terceiraLista(No **inicio, No **fim, No **listaOriginal){
 	No *auxInicio = *fim;
 	No *auxFim = *listaOriginal;
+	while(auxFim->prox != NULL){
+		auxFim = auxFim->prox;
+	}
 	if(auxInicio->dado != p){
 		auxInicio = *inicio;
 	}
@@ -140,17 +143,14 @@ void primeiraLista(No **lista){
 	}
 	aux = inicio;
 	//buscar n em sublista
-	printf("aux dado %d \n", aux->dado); 
 	while(aux->dado != n && aux->prox != NULL){
 		aux = aux->prox;
-		printf("Buscando em while.. %d \n", aux->dado);
 		if(aux->dado == n){
 			fim = aux;
 			break;
 		} 
 	}	
 	if(fim == NULL){
-		printf("Entrou no fim null");
 		aux = *lista;
 		while(aux -> dado != p && aux->prox != NULL){
 			aux = aux->prox;
