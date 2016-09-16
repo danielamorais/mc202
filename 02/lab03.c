@@ -18,6 +18,7 @@ Lista *tr;
 int custoMtf = 0;
 int custoTr = 0;
 int tamanhoMtf = 0; 
+int tamanhoTr = 0;
 
 void inicializarLista(Lista **lista){
 	*lista = NULL;	
@@ -38,7 +39,12 @@ void adicionarElemento(int numero, Lista **lista, int isMtf){
 		novo->prox = NULL;
 		(*lista)->prox = novo; 
 		if(isMtf == 1){
-			custoMtf += tamanhoMtf + 1;
+			tamanhoMtf += 1;
+			printf("\nTamanho mtf... %d\n", tamanhoMtf);
+			custoMtf += tamanhoMtf;
+		}else if(isMtf == 0){
+			tamanhoTr += 1;
+			custoTr += tamanhoTr;
 		}
 	}else{
 		Lista *aux = (*lista)->prox;
@@ -98,14 +104,15 @@ void leituraItens(){
 
 	scanf(" %d %d", &n, &r);
 	tamanhoMtf = n;
+	tamanhoTr = n;
 	for(int i = 0; i < n; i++){
 		scanf(" %d", &numero);
 		if(i == 0){
 			adicionarPrimeiroElemento(numero, &mtf);
 			adicionarPrimeiroElemento(numero, &tr);
 		}else{
-			adicionarElemento(numero, &mtf, 0);
-			adicionarElemento(numero, &tr, 0);
+			adicionarElemento(numero, &mtf, 2);
+			adicionarElemento(numero, &tr, 2);
 		}
 	}
 	for(int i = 0; i < r; i++){
@@ -124,16 +131,18 @@ void removerItem(Lista **lista, int item, int isMtf){
 			aux->prox = auxiliarProx->prox;
 			free(auxiliarProx);
 			if(isMtf == 1){
+				tamanhoMtf -= 1;
 				if(controle == 1){
 					custoMtf += 2;
 				}else{
 					custoMtf += controle + 1; 
 				}
 			}else{
+				tamanhoTr -= 1;
 				if(controle == 1){
 					custoTr += 2;
 				}else{
-					custoMtf += controle + 1;
+					custoTr += controle + 1;
 				}
 			}
 			break;
@@ -141,8 +150,10 @@ void removerItem(Lista **lista, int item, int isMtf){
 			*lista = aux->prox;
 			free(aux);
 			if(isMtf == 1){
+				tamanhoMtf -= 1;
 				custoMtf += controle;
 			}else{
+				tamanhoTr -= 1;
 				custoTr += controle;
 			}
 			break;  	
@@ -190,7 +201,7 @@ void imprimir(Lista **item){
 	}
 }
 
-void moverParaProximo(Lista **listaTr, int elemento){
+void moverParaProximo(Lista **listaTr, int elemento, int novoElemento){
 	Lista *aux = *listaTr;
 	int find = 0;
 	int controle = 1;
@@ -207,7 +218,8 @@ void moverParaProximo(Lista **listaTr, int elemento){
 					proximo->prox = aux;
 					*listaTr = proximo;					
 					find = 1;
-					custoTr += controle + 1;
+					if(novoElemento != 1)
+						custoTr += controle + 1;
 					break;
 				}
 				Lista *proxDoProx = proximo->prox;
@@ -217,7 +229,8 @@ void moverParaProximo(Lista **listaTr, int elemento){
 						proximo->prox = proxDoProx->prox;
 						proxDoProx->prox = proximo;
 						find = 1;
-						custoTr += controle + 2;
+						if(novoElemento != 1)
+							custoTr += controle + 2;
 						break;
 					}
 				}
@@ -238,7 +251,7 @@ void executarMtf(Lista *lista, Lista *listaTr, Requisicao **requisicao){
 				moverParaFrente(&auxLista, aux->elemento, 1);
 				imprimir(&auxLista);
 				printf("\t Custo %d \t", custoMtf);
-				moverParaProximo(&auxTr, aux->elemento);
+				moverParaProximo(&auxTr, aux->elemento, 0);
 				imprimir(&auxTr);
 				printf("\t Custo %d \n", custoTr);
 				break;
@@ -247,7 +260,7 @@ void executarMtf(Lista *lista, Lista *listaTr, Requisicao **requisicao){
 				imprimir(&auxLista);
 				printf("\t Custo %d \t", custoMtf);
 				adicionarElemento(aux->elemento, &auxTr, 0);
-				moverParaProximo(&auxTr, aux->elemento);
+				moverParaProximo(&auxTr, aux->elemento, 1);
 				imprimir(&auxTr);
 				printf("\t Custo %d \n", custoTr);
 				break;
