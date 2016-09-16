@@ -24,7 +24,7 @@ void inicializarListaRequisicao(Requisicao **lista){
 }
 
 void adicionarElemento(int numero, Lista **lista){
-	if((*(*lista)).prox == NULL){
+	if((*lista)->prox == NULL){
 		Lista *novo = malloc(sizeof(Lista));
 		if(novo == NULL){
 			printf("Erro ao alocar memoria!");
@@ -50,12 +50,34 @@ void adicionarPrimeiroElemento(int numero, Lista **lista){
 	*lista = novo;  
 }
 
-void adicionarRequisicao(int requisicao, int numero, Requisicao **listaRequisicao){
+void adicionarRequisicao(char requisicao, int numero, Requisicao **listaRequisicao){
+	if((*listaRequisicao)->prox == NULL){
+		Requisicao *novo = malloc(sizeof(Requisicao));
+		if(novo == NULL){
+			printf("Erro ao alocar memoria!");
+			exit(1);
+		}
+		novo->elemento = numero;
+		novo->tipo = requisicao;
+		novo->prox = NULL;
+		(*listaRequisicao)->prox = novo; 
+	}else{
+		Requisicao *aux = (*listaRequisicao)->prox;
+		adicionarRequisicao(requisicao, numero, &aux);
+	}	
 
 }
 
-void adicionarPrimeiraRequisicao(int requisicao, int numero, Requisicao **listaRequisicao){
-
+void adicionarPrimeiraRequisicao(char requisicao, int numero, Requisicao **listaRequisicao){
+	Requisicao *novo = malloc(sizeof(Requisicao));
+	if(novo == NULL){
+		printf("Erro ao alocar memoria!");
+		exit(1);
+	}
+	novo->elemento = numero;
+	novo->tipo = requisicao;
+	novo->prox = NULL;
+	*listaRequisicao = novo; 
 }
 
 void leituraItens(){
@@ -88,6 +110,13 @@ int main(){
 	while(atual != NULL){
 		printf("%d ", atual->dado);
 		atual = atual->prox;
+	}
+
+	printf("\n Printando char\n");
+	Requisicao *atualReq = listaRequisicao;
+	while(atualReq != NULL){
+		printf(" %c %d\n", atualReq->tipo, atualReq->elemento);
+		atualReq = atualReq->prox;
 	}
 	return 0;
 }
