@@ -15,6 +15,9 @@ typedef struct Requisicao{
 Requisicao *listaRequisicao; 
 Lista *mtf; 
 Lista *tr; 
+int custoMtf = 0;
+int custoTr = 0;
+int tamanhoMtf = 0; 
 
 void inicializarLista(Lista **lista){
 	*lista = NULL;	
@@ -24,7 +27,7 @@ void inicializarListaRequisicao(Requisicao **lista){
 	*lista = NULL;
 }
 
-void adicionarElemento(int numero, Lista **lista){
+void adicionarElemento(int numero, Lista **lista, int isMtf){
 	if((*lista)->prox == NULL){
 		Lista *novo = malloc(sizeof(Lista));
 		if(novo == NULL){
@@ -34,9 +37,12 @@ void adicionarElemento(int numero, Lista **lista){
 		novo->dado = numero;
 		novo->prox = NULL;
 		(*lista)->prox = novo; 
+		if(isMtf == 1){
+			custoMtf += tamanhoMtf + 1;
+		}
 	}else{
 		Lista *aux = (*lista)->prox;
-		adicionarElemento(numero, &aux);
+		adicionarElemento(numero, &aux, isMtf);
 	}	
 }
 
@@ -91,14 +97,15 @@ void leituraItens(){
 	int numero;
 
 	scanf(" %d %d", &n, &r);
+	tamanhoMtf = n;
 	for(int i = 0; i < n; i++){
 		scanf(" %d", &numero);
 		if(i == 0){
 			adicionarPrimeiroElemento(numero, &mtf);
 			adicionarPrimeiroElemento(numero, &tr);
 		}else{
-			adicionarElemento(numero, &mtf);
-			adicionarElemento(numero, &tr);
+			adicionarElemento(numero, &mtf, 0);
+			adicionarElemento(numero, &tr, 0);
 		}
 	}
 	for(int i = 0; i < r; i++){
@@ -108,30 +115,41 @@ void leituraItens(){
 
 }
 
-void removerItem(Lista **lista, int item){
+void removerItem(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
 	int find = 0;
+	int controle = 1; 
 	while(aux != NULL && find == 0){ 
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
 			aux->prox = auxiliarProx->prox;
 			free(auxiliarProx);
 			find = 1;
+			if(isMtf == 1){
+				if(controle == 1){
+					custoMtf += 2;
+				}else{
+					custoMtf += controle + 1; 
+				}
+			}
 			break;
 		}else if(aux->dado == item){
 			*lista = aux->prox;
 			free(aux);
 			find = 1;
+			custoMtf += controle; 
 			break;  	
 		}else{
 			aux = aux->prox;
+			++controle;
 		}
 	}
 }
 
-void moverParaFrente(Lista **lista, int item){
+void moverParaFrente(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
 	int find= 0;
+	int controle = 1;
 	while(aux != NULL && find == 0){
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
@@ -142,11 +160,22 @@ void moverParaFrente(Lista **lista, int item){
 			//printf("O inicio da lista sera %d\n", auxiliarProx->dado);
 			*lista = auxiliarProx;
 			find = 1;
+			if(isMtf == 1){
+				if(controle == 1){
+					custoMtf += 2;
+				}else{
+					custoMtf += controle + 1;
+				}
+			} 
 			break;
 		}else if(aux->dado == item){
 			find = 1;
+			if(isMtf == 1){
+				custoMtf += 1;
+			}
 			break;
 		}else{
+			++controle;
 			aux = aux->prox;
 		}
 	}
@@ -166,21 +195,21 @@ void executarMtf(Lista *lista, Requisicao **requisicao){
 	int k = 0;
 	while(aux != NULL){
 		switch(aux->tipo){ 
-		case 'a': //printf("Movendo para frente %d\n", aux->elemento);
-			  moverParaFrente(&auxLista, aux->elemento);
-			  imprimir(&auxLista);
-			  printf("\n");
-			  ++k;
-			  break;
-		case 'i': //printf("Inserindo no fim..");
-			  adicionarElemento(aux->elemento, &auxLista);
-			  imprimir(&auxLista);
-			  printf("\n");
-			  break;
-		case 'r': removerItem(&auxLista, aux->elemento);
-			  imprimir(&auxLista);
-			  printf("\n");
-			  break;
+			case 'a': //printf("Movendo para frente %d\n", aux->elemento);
+				moverParaFrente(&auxLista, aux->elemento, 1);
+				imprimir(&auxLista);
+				printf("\t Custo %d \n", custoMtf);
+				++k;
+				break;
+			case 'i': //printf("Inserindo no fim..");
+				adicionarElemento(aux->elemento, &auxLista, 1);
+				imprimir(&auxLista);
+				printf("\t Custo %d \n", custoMtf);
+				break;
+			case 'r': removerItem(&auxLista, aux->elemento, 1);
+				  imprimir(&auxLista);
+				  printf("\t Custo %d \n", custoMtf);
+				  break;
 		}
 		//printf("Saindo do switch..\n");
 		aux = aux->prox;
