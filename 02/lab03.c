@@ -40,7 +40,7 @@ void adicionarElemento(int numero, Lista **lista, int isMtf){
 		(*lista)->prox = novo; 
 		if(isMtf == 1){
 			tamanhoMtf += 1;
-			printf("\nTamanho mtf... %d\n", tamanhoMtf);
+
 			custoMtf += tamanhoMtf;
 		}else if(isMtf == 0){
 			tamanhoTr += 1;
@@ -125,6 +125,16 @@ void leituraItens(){
 void removerItem(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
 	int controle = 1; 
+	if(tamanhoMtf == 1){
+		tamanhoMtf -= 1;
+		custoMtf += 1;
+		return ; 
+	}
+	if(tamanhoTr == 1){
+		tamanhoTr -= 1;
+		custoTr += 1;
+		return ;
+	}
 	while(aux != NULL){ 
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
@@ -193,11 +203,13 @@ void moverParaFrente(Lista **lista, int item, int isMtf){
 	}
 }
 
-void imprimir(Lista **item){
-	Lista *aux = *item;
-	while(aux != NULL){
-		printf(" %d", aux->dado);
-		aux = aux->prox;
+void imprimir(Lista **item, int tamanho){
+	if(tamanho > 1){	
+		Lista *aux = *item;
+		while(aux != NULL){
+			printf("%d ", aux->dado);
+			aux = aux->prox;
+		}
 	}
 }
 
@@ -241,43 +253,57 @@ void moverParaProximo(Lista **listaTr, int elemento, int novoElemento){
 	}
 }
 
-void executarMtf(Lista *lista, Lista *listaTr, Requisicao **requisicao){
+/* *
+ * Destruir toda a lista e liberar memoria 
+ * */
+void liberarMemoria(Lista **lista){
+	Lista *atual, *proximoElemento; 
+	proximoElemento = *lista; //Irá apontar para o primeiro elemento
+	while(proximoElemento != NULL){
+		atual = proximoElemento;
+		proximoElemento = atual->prox;
+		free(atual);
+	}
+}
+
+void executarMtf(Lista **lista, Lista **listaTr, Requisicao **requisicao){
 	Requisicao *aux = *requisicao;
-	Lista *auxLista = lista;
-	Lista *auxTr = listaTr;
+	Lista *auxLista = *lista;
+	Lista *auxTr = *listaTr;
 	while(aux != NULL){
 		switch(aux->tipo){ 
-			case 'a': //printf("Movendo para frente %d\n", aux->elemento);
+			case 'a': 
 				moverParaFrente(&auxLista, aux->elemento, 1);
-				imprimir(&auxLista);
-				printf("\t Custo %d \t", custoMtf);
 				moverParaProximo(&auxTr, aux->elemento, 0);
-				imprimir(&auxTr);
-				printf("\t Custo %d \n", custoTr);
 				break;
-			case 'i': //printf("Inserindo no fim..");
+			case 'i':
 				adicionarElemento(aux->elemento, &auxLista, 1);
-				imprimir(&auxLista);
-				printf("\t Custo %d \t", custoMtf);
 				adicionarElemento(aux->elemento, &auxTr, 0);
 				moverParaProximo(&auxTr, aux->elemento, 1);
-				imprimir(&auxTr);
-				printf("\t Custo %d \n", custoTr);
 				break;
-			case 'r': removerItem(&auxLista, aux->elemento, 1);
-				  imprimir(&auxLista);
-				  printf("\t Custo %d \t", custoMtf);
-				  removerItem(&auxTr, aux->elemento, 0);
-			          imprimir(&auxTr);
-				  printf("\t Custo %d \n", custoTr);
+			case 'r': 
+				  if(tamanhoMtf > 0){
+				  removerItem(&auxLista, aux->elemento, 1);
+				  }
+				  if(tamanhoTr > 0){
+				  removerItem(&auxTr, aux->elemento, 0);			 
+				  }
 				  break;
 		}
 		aux = aux->prox;
 	}
+	printf("%d\n", custoMtf);
+	imprimir(&auxLista, tamanhoMtf);
+	printf("\n%d\n", custoTr);
+	imprimir(&auxTr, tamanhoTr);
+	liberarMemoria(&auxLista);
+	liberarMemoria(&auxTr);
 }
 
 int main(){
 	leituraItens();
-	executarMtf(mtf, tr, &listaRequisicao);
+	executarMtf(&mtf, &tr, &listaRequisicao);
+	//liberarMemoria(&mtf);
+	//liberarMemoria(&tr);
 	return 0;
 }
