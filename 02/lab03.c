@@ -102,8 +102,37 @@ void leituraItens(){
 
 }
 
+void moverParaFrente(Lista **lista, int item){
+	Lista *aux = *lista; 
+	while(aux != NULL){
+		Lista *auxiliarProx = aux->prox;
+		if(auxiliarProx->dado == item){
+			printf("Estou em .. %d \n", aux->dado);
+			aux->prox = auxiliarProx->prox;
+			auxiliarProx->prox = (*lista)->prox;
+			*lista = auxiliarProx;
+			break;
+		}else{
+			aux = aux->prox;
+		}
+	}
+}
+
+void executarMtf(Lista **lista, Requisicao **requisicao){
+	Requisicao *aux = *requisicao;
+	Lista *auxLista = *lista;
+	while(aux != NULL){
+		switch(aux->tipo){ 
+		case 'a': moverParaFrente(&auxLista, aux->elemento);
+			  break;
+		}
+	}
+}
+
 int main(){
 	leituraItens();
+	executarMtf(&lista, &listaRequisicao);
+	/*
 	//Exibir itens 
 	Lista *atual = lista;
 	printf("Printando \n");
@@ -117,6 +146,6 @@ int main(){
 	while(atualReq != NULL){
 		printf(" %c %d\n", atualReq->tipo, atualReq->elemento);
 		atualReq = atualReq->prox;
-	}
+	}*/
 	return 0;
 }
