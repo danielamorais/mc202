@@ -129,12 +129,22 @@ void removerItem(Lista **lista, int item, int isMtf){
 				}else{
 					custoMtf += controle + 1; 
 				}
+			}else{
+				if(controle == 1){
+					custoTr += 2;
+				}else{
+					custoMtf += controle + 1;
+				}
 			}
 			break;
 		}else if(aux->dado == item){
 			*lista = aux->prox;
 			free(aux);
-			custoMtf += controle; 
+			if(isMtf == 1){
+				custoMtf += controle;
+			}else{
+				custoTr += controle;
+			}
 			break;  	
 		}else{
 			aux = aux->prox;
@@ -183,9 +193,8 @@ void imprimir(Lista **item){
 void moverParaProximo(Lista **listaTr, int elemento){
 	Lista *aux = *listaTr;
 	int find = 0;
-	int controle = 0;
+	int controle = 1;
 	while(aux != NULL && find == 0){
-		++controle;
 		if(aux->dado == elemento && controle == 1){
 			custoTr += 1;
 			find = 1;
@@ -198,6 +207,7 @@ void moverParaProximo(Lista **listaTr, int elemento){
 					proximo->prox = aux;
 					*listaTr = proximo;					
 					find = 1;
+					custoTr += controle + 1;
 					break;
 				}
 				Lista *proxDoProx = proximo->prox;
@@ -207,11 +217,13 @@ void moverParaProximo(Lista **listaTr, int elemento){
 						proximo->prox = proxDoProx->prox;
 						proxDoProx->prox = proximo;
 						find = 1;
+						custoTr += controle + 2;
 						break;
 					}
 				}
 			} 
 		}
+		++controle;
 		aux = aux->prox;
 	}
 }
@@ -228,16 +240,23 @@ void executarMtf(Lista *lista, Lista *listaTr, Requisicao **requisicao){
 				printf("\t Custo %d \t", custoMtf);
 				moverParaProximo(&auxTr, aux->elemento);
 				imprimir(&auxTr);
-				printf("\t Custo \n");
+				printf("\t Custo %d \n", custoTr);
 				break;
 			case 'i': //printf("Inserindo no fim..");
 				adicionarElemento(aux->elemento, &auxLista, 1);
 				imprimir(&auxLista);
-				printf("\t Custo %d \n", custoMtf);
+				printf("\t Custo %d \t", custoMtf);
+				adicionarElemento(aux->elemento, &auxTr, 0);
+				moverParaProximo(&auxTr, aux->elemento);
+				imprimir(&auxTr);
+				printf("\t Custo %d \n", custoTr);
 				break;
 			case 'r': removerItem(&auxLista, aux->elemento, 1);
 				  imprimir(&auxLista);
-				  printf("\t Custo %d \n", custoMtf);
+				  printf("\t Custo %d \t", custoMtf);
+				  removerItem(&auxTr, aux->elemento, 0);
+			          imprimir(&auxTr);
+				  printf("\t Custo %d \n", custoTr);
 				  break;
 		}
 		aux = aux->prox;
