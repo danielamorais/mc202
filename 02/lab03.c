@@ -1,3 +1,8 @@
+/* *
+* Daniela Marques de Morais - 169562
+* MC202 - Lab 02: Listas 
+* */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,6 +33,9 @@ void inicializarListaRequisicao(Requisicao **lista){
 	*lista = NULL;
 }
 
+/* *
+* Adiciona elemento no fim da lista e realiza calculo se foi enviado por um comando da lista de requisicao (a) 
+* */
 void adicionarElemento(int numero, Lista **lista, int isMtf){
 	if((*lista)->prox == NULL){
 		Lista *novo = malloc(sizeof(Lista));
@@ -63,6 +71,9 @@ void adicionarPrimeiroElemento(int numero, Lista **lista){
 	*lista = novo;  
 }
 
+/* *
+* Adiciona item da requisicao (a, i ou r) na lista de requisicao
+* */
 void adicionarRequisicao(char requisicao, int numero, Requisicao **listaRequisicao){
 	if((*listaRequisicao)->prox == NULL){
 		Requisicao *novo = malloc(sizeof(Requisicao));
@@ -93,6 +104,9 @@ void adicionarPrimeiraRequisicao(char requisicao, int numero, Requisicao **lista
 	*listaRequisicao = novo; 
 }
 
+/* *
+* Efetua leitura de itens e executa os respectivos algoritmos (tr ou mtf)
+* */
 void leituraItens(){
 	inicializarLista(&mtf);
 	inicializarLista(&tr);
@@ -122,6 +136,9 @@ void leituraItens(){
 
 }
 
+/* *
+* Remove item e realiza o respectivo calculo do custo se eh MTF ou TR  
+* */
 void removerItem(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
 	int controle = 1; 
@@ -174,6 +191,9 @@ void removerItem(Lista **lista, int item, int isMtf){
 	}
 }
 
+/* *
+* Move item para a primeira posicao da lista e realiza o calculo do custo
+* */
 void moverParaFrente(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
 	int controle = 1;
@@ -212,7 +232,9 @@ void imprimir(Lista **item, int tamanho){
 		}
 	}
 }
-
+/* *
+* Especifico para o TR: Realiza troca de posicao de elemento. Essa funcao eh reaproveitada quando um novo elemento eh inserido, caso seja um novo elemento nao eh necessario calcular o custo de trocar de posicao. 
+* */
 void moverParaProximo(Lista **listaTr, int elemento, int novoElemento){
 	Lista *aux = *listaTr;
 	int find = 0;
@@ -266,6 +288,9 @@ void liberarMemoria(Lista **lista){
 	}
 }
 
+/* *
+* Realiza leitura de lista que contem as requisicoes e chama os algoritmos (TF ou MTF) necessarios
+* */
 void executarMtf(Lista **lista, Lista **listaTr, Requisicao **requisicao){
 	Requisicao *aux = *requisicao;
 	Lista *auxLista = *lista;
@@ -303,7 +328,5 @@ void executarMtf(Lista **lista, Lista **listaTr, Requisicao **requisicao){
 int main(){
 	leituraItens();
 	executarMtf(&mtf, &tr, &listaRequisicao);
-	//liberarMemoria(&mtf);
-	//liberarMemoria(&tr);
 	return 0;
 }
