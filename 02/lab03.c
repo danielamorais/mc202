@@ -149,19 +149,16 @@ void moverParaFrente(Lista **lista, int item, int isMtf){
 	while(aux != NULL){
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
-			//printf("First.. Este %d ira apontar para %d \n", aux->dado, auxiliarProx->prox->dado);
-			aux->prox = auxiliarProx->prox;
-			//printf("Este %d ira apontar para %d \n", auxiliarProx->dado, (*lista)->dado);
-			auxiliarProx->prox = *lista;
-			//printf("O inicio da lista sera %d\n", auxiliarProx->dado);
-			*lista = auxiliarProx;
 			if(isMtf == 1){
+				aux->prox = auxiliarProx->prox;
+				auxiliarProx->prox = *lista;
+				*lista = auxiliarProx;
 				if(controle == 1){
 					custoMtf += 2;
 				}else{
 					custoMtf += controle + 1;
 				}
-			} 
+			}
 			break;
 		}else if(aux->dado == item){
 			if(isMtf == 1){
@@ -183,15 +180,55 @@ void imprimir(Lista **item){
 	}
 }
 
-void executarMtf(Lista *lista, Requisicao **requisicao){
+void moverParaProximo(Lista **listaTr, int elemento){
+	Lista *aux = *listaTr;
+	int find = 0;
+	int controle = 0;
+	while(aux != NULL && find == 0){
+		++controle;
+		if(aux->dado == elemento && controle == 1){
+			custoTr += 1;
+			find = 1;
+			break;
+		}else{
+			Lista *proximo = aux->prox;
+			if(proximo != NULL){
+				if(proximo->dado == elemento){
+					aux->prox = proximo->prox;
+					proximo->prox = aux;
+					*listaTr = proximo;					
+					find = 1;
+					break;
+				}
+				Lista *proxDoProx = proximo->prox;
+				if(proxDoProx != NULL){
+					if(proxDoProx->dado == elemento){
+						aux->prox = proxDoProx;
+						proximo->prox = proxDoProx->prox;
+						proxDoProx->prox = proximo;
+						find = 1;
+						break;
+					}
+				}
+			} 
+		}
+		aux = aux->prox;
+	}
+}
+
+void executarMtf(Lista *lista, Lista *listaTr, Requisicao **requisicao){
 	Requisicao *aux = *requisicao;
 	Lista *auxLista = lista;
+	Lista *auxTr = listaTr;
 	while(aux != NULL){
 		switch(aux->tipo){ 
 			case 'a': //printf("Movendo para frente %d\n", aux->elemento);
 				moverParaFrente(&auxLista, aux->elemento, 1);
 				imprimir(&auxLista);
-				printf("\t Custo %d \n", custoMtf);
+				printf("\t Custo %d \t", custoMtf);
+				moverParaProximo(&auxTr, aux->elemento);
+				imprimir(&auxTr);
+				printf("\t Custo \n");
 				break;
 			case 'i': //printf("Inserindo no fim..");
 				adicionarElemento(aux->elemento, &auxLista, 1);
@@ -209,6 +246,6 @@ void executarMtf(Lista *lista, Requisicao **requisicao){
 
 int main(){
 	leituraItens();
-	executarMtf(mtf, &listaRequisicao);
+	executarMtf(mtf, tr, &listaRequisicao);
 	return 0;
 }
