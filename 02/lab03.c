@@ -117,14 +117,12 @@ void leituraItens(){
 
 void removerItem(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
-	int find = 0;
 	int controle = 1; 
-	while(aux != NULL && find == 0){ 
+	while(aux != NULL){ 
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
 			aux->prox = auxiliarProx->prox;
 			free(auxiliarProx);
-			find = 1;
 			if(isMtf == 1){
 				if(controle == 1){
 					custoMtf += 2;
@@ -136,7 +134,6 @@ void removerItem(Lista **lista, int item, int isMtf){
 		}else if(aux->dado == item){
 			*lista = aux->prox;
 			free(aux);
-			find = 1;
 			custoMtf += controle; 
 			break;  	
 		}else{
@@ -148,9 +145,8 @@ void removerItem(Lista **lista, int item, int isMtf){
 
 void moverParaFrente(Lista **lista, int item, int isMtf){
 	Lista *aux = *lista;
-	int find= 0;
 	int controle = 1;
-	while(aux != NULL && find == 0){
+	while(aux != NULL){
 		Lista *auxiliarProx = aux->prox;
 		if(auxiliarProx->dado == item){
 			//printf("First.. Este %d ira apontar para %d \n", aux->dado, auxiliarProx->prox->dado);
@@ -159,7 +155,6 @@ void moverParaFrente(Lista **lista, int item, int isMtf){
 			auxiliarProx->prox = *lista;
 			//printf("O inicio da lista sera %d\n", auxiliarProx->dado);
 			*lista = auxiliarProx;
-			find = 1;
 			if(isMtf == 1){
 				if(controle == 1){
 					custoMtf += 2;
@@ -169,7 +164,6 @@ void moverParaFrente(Lista **lista, int item, int isMtf){
 			} 
 			break;
 		}else if(aux->dado == item){
-			find = 1;
 			if(isMtf == 1){
 				custoMtf += 1;
 			}
@@ -192,14 +186,12 @@ void imprimir(Lista **item){
 void executarMtf(Lista *lista, Requisicao **requisicao){
 	Requisicao *aux = *requisicao;
 	Lista *auxLista = lista;
-	int k = 0;
 	while(aux != NULL){
 		switch(aux->tipo){ 
 			case 'a': //printf("Movendo para frente %d\n", aux->elemento);
 				moverParaFrente(&auxLista, aux->elemento, 1);
 				imprimir(&auxLista);
 				printf("\t Custo %d \n", custoMtf);
-				++k;
 				break;
 			case 'i': //printf("Inserindo no fim..");
 				adicionarElemento(aux->elemento, &auxLista, 1);
@@ -211,10 +203,8 @@ void executarMtf(Lista *lista, Requisicao **requisicao){
 				  printf("\t Custo %d \n", custoMtf);
 				  break;
 		}
-		//printf("Saindo do switch..\n");
 		aux = aux->prox;
 	}
-	//*lista = auxLista;
 }
 
 int main(){
