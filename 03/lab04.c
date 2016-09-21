@@ -13,6 +13,10 @@ typedef struct Resultado{
 	struct Resultado *prox; 
 } Resultado;
 
+int tamanho = 0;
+int primeiroNumero = 0;
+int ultimoNumero = 0;
+
 void inicializarPilha(Brinquedo **pilha){
 	*pilha = NULL;
 }
@@ -29,7 +33,7 @@ int verificarItemLista(Resultado **lista, int item, int cor){
 			if(aux->cor != cor){
 				return 1; 
 			}	
-			return 0; 
+			return 2; 
 		}
 		aux = aux->prox;	
 	}
@@ -70,13 +74,18 @@ void imprimirLista(Resultado **lista){
 void lerEntrada(Brinquedo **pilha){
 	int numero; 
 	char proxChar;
-	int tamanho; 
 	scanf("%d", &tamanho);
-	
+	int k = 0;
 	while(scanf("%d%c", &numero, &proxChar) == 2){
+		++k; 		
 		adicionarElemento(pilha, numero);
-		if(proxChar == '\n' || proxChar == '\r')
-			break;
+		if(k == 1){
+			primeiroNumero = numero;
+		}
+		if(proxChar == '\n' || proxChar == '\r'){
+			ultimoNumero = numero; 			
+			break;		
+		}
 	}
 }
 
@@ -97,12 +106,14 @@ int validarMatrioshka(Brinquedo **pilha){
 		if(aux->valor >= 0){
 		//	printf("Adicionado elemento positivo.. %d \n", aux->valor);
 			adicionarElemento(&pilhaTemporaria, aux->valor);
-		}else{
+		}else if(pilhaTemporaria != NULL){
 			if((*pilhaTemporaria).valor == ((aux->valor) * (-1))){
 			 	//Removera item da lista temporaria
 		//	 	printf("Removendo.. %d \n", (aux->valor) * (-1));
 				removerElemento(&pilhaTemporaria);
 			}
+		}else{
+			return 0;
 		}
 		aux = aux->prox;
 	}	
@@ -121,12 +132,14 @@ int getCor(int valor){
 	return 0; 
 }
 
-/* *
- * Ordena a lista de resultados com base no campo item 
- * */
-//TODO
-void ordenarLista(Resultado **lista){
-	
+int contarElementosLista(Resultado **lista){
+	Resultado *aux = *lista;
+	int i = 0;
+	while(aux != NULL){
+		++i;
+		aux = aux->prox; 
+	}
+	return i;
 }
 
 /*
@@ -142,6 +155,20 @@ void adicionarElementoLista(Resultado **lista, int item, int cor){
 	novoElemento->cor = cor; 
 	novoElemento->prox = *lista;
 	*lista = novoElemento; 	
+}
+
+void ordenarVetor(Resultado vetor[], int tamanho){
+	int i, j;
+	Resultado aux;
+        for(i=tamanho-1; i >= 1; i--){  
+		for(j=0; j < i ; j++){
+			if(vetor[j].item > vetor[j+1].item){
+				aux = vetor[j];
+				vetor[j] = vetor[j+1];
+				vetor[j+1] = aux;
+			}
+		}
+	}          
 }
 
 void calcularCor(Brinquedo **pilha){
@@ -160,23 +187,25 @@ void calcularCor(Brinquedo **pilha){
 			Brinquedo *atual = pilhaTemporaria;
 			atual->cor = getCor(atual->cor + atual->valor);
 			pilhaTemporaria = pilhaTemporaria->prox;
-			printf("A cor do %d eh %d \n", atual->valor, atual->cor);
-			if(verificarItemLista(&lista, atual->valor, atual->cor) == 0){
+			//printf("A cor do %d eh %d \n", atual->valor, atual->cor);
+			int statusLista = verificarItemLista(&lista, atual->valor, atual->cor);
+			if(statusLista == 0){
 				adicionarElementoLista(&lista, atual->valor, atual->cor);
 				free(atual);
-			}else{
-				printf("invalido");
+			}else if(statusLista == 1){
+				printf("sequencia invalida ou nao pode colorir");
 				free(atual);
 				return ;
 			}
 		}else{
 			pilhaTemporaria->cor = getCor(aux->valor + pilhaTemporaria->cor);
 			Brinquedo *atual = pilhaTemporaria;
-			printf("A cor do %d eh %d \n", atual->valor, atual->cor);
-			if(verificarItemLista(&lista, atual->valor, atual->cor) == 0){
+			//printf("A cor do %d eh %d \n", atual->valor, atual->cor);
+			int statusLista = verificarItemLista(&lista, atual->valor, atual->cor);
+			if(statusLista == 0){
 				adicionarElementoLista(&lista, atual->valor, atual->cor);
-			}else{
-				printf("invalido");
+			}else if(statusLista == 1){
+				printf("sequencia invalida ou nao pode colorir");
 				return ;
 			}
 			//TODO: LIberar memoria 
@@ -184,18 +213,39 @@ void calcularCor(Brinquedo **pilha){
 		}
 		aux= aux -> prox;
 	}
-  	imprimirLista(&lista);
+	int n = contarElementosLista(&lista);
+	Resultado vetor[n];
+	//imprimir vetor
+	Resultado *myAux = lista;
+	for(int i = 0; i < n; i++){
+		if(myAux == NULL){
+			break; 
+		}
+		vetor[i] = *myAux;
+		myAux = myAux->prox;
+	}
+	ordenarVetor(vetor, n);
+	//imprimir
+	printf("sequencia valida pode ser colorida\n");
+	for(int i = 0; i < n; i++){
+		if(vetor[i].cor == 1){
+			printf("%d: azul\n", vetor[i].item);
+		}else{
+			printf("%d: vermelho\n", vetor[i].item);
+		}
+	}
+  	//imprimirLista(&lista);
 }
 
 int main(){
 	Brinquedo *pilha;
 	inicializarPilha(&pilha);
 	lerEntrada(&pilha);
-	imprimirPilha(&pilha);
-	if(validarMatrioshka(&pilha) == 1){
+	//imprimirPilha(&pilha);
+	if(primeiroNumero == (ultimoNumero * (-1)) && validarMatrioshka(&pilha) == 1){
 		calcularCor(&pilha);
 	}else{
-		printf("invalido");
+		printf("sequencia invalida ou nao pode colorir");
 	}
 	return 0;
 }
