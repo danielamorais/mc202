@@ -25,6 +25,32 @@ void inicializarLista(Resultado **lista){
 	*lista = NULL;
 }
 
+/* *
+ * Destruir toda a pilha e liberar memoria 
+ * */
+void liberarMemoriaPilha(Brinquedo **pilha){
+	Brinquedo *atual, *proximoElemento; 
+	proximoElemento = *pilha; //Irá apontar para o primeiro elemento
+	while(proximoElemento != NULL){
+		atual = proximoElemento;
+		proximoElemento = atual->prox;
+		free(atual);
+	}
+}
+
+/* *
+ * Destruir toda a lista e liberar memoria 
+ * */
+void liberarMemoriaLista(Resultado **lista){
+	Resultado *atual, *proximoElemento; 
+	proximoElemento = *lista; //Irá apontar para o primeiro elemento
+	while(proximoElemento != NULL){
+		atual = proximoElemento;
+		proximoElemento = atual->prox;
+		free(atual);
+	}
+}
+
 //Retornar 1 para caso seja invalido, 0 para caso seja possivel inserir 
 int verificarItemLista(Resultado **lista, int item, int cor){
 	Resultado *aux = *lista;
@@ -50,14 +76,6 @@ void adicionarElemento(Brinquedo **pilha, int valor){
 	novoElemento->prox = *pilha;
 	novoElemento->cor = 0; //Inicializa como zero para nao haver problemas no calculo
 	*pilha = novoElemento; 
-}
-
-void imprimirPilha(Brinquedo **pilha){
-	Brinquedo *aux = *pilha; 
-	while(aux != NULL){
-		printf("%d ", aux->valor);
-		aux = aux->prox;
-	}
 }
 
 void imprimirLista(Resultado **lista){
@@ -99,18 +117,13 @@ void removerElemento(Brinquedo **pilha){
 int validarMatrioshka(Brinquedo **pilha){
 	Brinquedo *aux = *pilha; 
 	Brinquedo *pilhaTemporaria;
-	//printf("Inicializando lista...\n");
 	inicializarPilha(&pilhaTemporaria);
 	while(aux != NULL){
-		//printf("Entrei no while!\n");
 		if(aux->valor >= 0){
-		//	printf("Adicionado elemento positivo.. %d \n", aux->valor);
 			adicionarElemento(&pilhaTemporaria, aux->valor);
 		}else if(pilhaTemporaria != NULL){
 			if((*pilhaTemporaria).valor == ((aux->valor) * (-1))){
-			 	//Removera item da lista temporaria
-		//	 	printf("Removendo.. %d \n", (aux->valor) * (-1));
-				removerElemento(&pilhaTemporaria);
+			 	removerElemento(&pilhaTemporaria);
 			}
 		}else{
 			return 0;
@@ -120,7 +133,6 @@ int validarMatrioshka(Brinquedo **pilha){
 	if(pilhaTemporaria == NULL){
 		return 1;
 	}
-	//TODO: liberar memoria 
 	return 0;
 }
 
@@ -187,7 +199,6 @@ void calcularCor(Brinquedo **pilha){
 			Brinquedo *atual = pilhaTemporaria;
 			atual->cor = getCor(atual->cor + atual->valor);
 			pilhaTemporaria = pilhaTemporaria->prox;
-			//printf("A cor do %d eh %d \n", atual->valor, atual->cor);
 			int statusLista = verificarItemLista(&lista, atual->valor, atual->cor);
 			if(statusLista == 0){
 				adicionarElementoLista(&lista, atual->valor, atual->cor);
@@ -200,7 +211,6 @@ void calcularCor(Brinquedo **pilha){
 		}else{
 			pilhaTemporaria->cor = getCor(aux->valor + pilhaTemporaria->cor);
 			Brinquedo *atual = pilhaTemporaria;
-			//printf("A cor do %d eh %d \n", atual->valor, atual->cor);
 			int statusLista = verificarItemLista(&lista, atual->valor, atual->cor);
 			if(statusLista == 0){
 				adicionarElementoLista(&lista, atual->valor, atual->cor);
@@ -208,7 +218,6 @@ void calcularCor(Brinquedo **pilha){
 				printf("sequencia invalida ou nao pode colorir");
 				return ;
 			}
-			//TODO: LIberar memoria 
 			break;
 		}
 		aux= aux -> prox;
@@ -234,18 +243,18 @@ void calcularCor(Brinquedo **pilha){
 			printf("%d: vermelho\n", vetor[i].item);
 		}
 	}
-  	//imprimirLista(&lista);
+  	liberarMemoriaLista(&lista);
 }
 
 int main(){
 	Brinquedo *pilha;
 	inicializarPilha(&pilha);
 	lerEntrada(&pilha);
-	//imprimirPilha(&pilha);
 	if(primeiroNumero == (ultimoNumero * (-1)) && validarMatrioshka(&pilha) == 1){
 		calcularCor(&pilha);
 	}else{
 		printf("sequencia invalida ou nao pode colorir");
 	}
+	liberarMemoriaPilha(&pilha);
 	return 0;
 }
