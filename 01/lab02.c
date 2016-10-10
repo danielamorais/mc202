@@ -1,5 +1,6 @@
 /* *
  * Daniela Marques de Morais - 169562
+ * Programa para receber lista e gerar novas listas a partir de valores m, n e p
  * */
 
 #include <stdio.h>
@@ -10,11 +11,7 @@ typedef struct No {
 	struct No *prox; 
 } No;
 
-int k = 0; 
 int m, n, p;
-No *listaUm;
-No *listaDois;
-No *listaTres; 
 
 void inicializarLista(No **lista){
 	*lista = NULL; 
@@ -173,25 +170,23 @@ void primeiraLista(No **lista){
 
 int main(){
 	No *lista, *atual;
+	int k = 0; //Verificar se eh o primeiro elemento 
 	inicializarLista(&lista);
+
 	//Ler elemento
-	char next_char;
-	int number;
-	while (scanf("%d%c", &number, &next_char) == 2) {
+	char proxChar;
+	int numero;
+	while (scanf("%d%c", &numero, &proxChar) == 2) {
 		++k;
-		if(k == 1){
-			addPrimeiroElemento(&lista, number);
-		}else{
-			adicionarElemento(&lista, number);
-		}
+		(k == 1) ? addPrimeiroElemento(&lista, numero) : adicionarElemento(&lista, numero);
 		//Leitura de m, n e p
-		if (next_char == '\n' || next_char == '\r'){
+		if (proxChar == '\n' || proxChar == '\r'){
 			scanf("%d %d %d", &m, &n, &p);
 			break; 
 		}
 	}
 
-	atual = lista; 
+	atual = lista;
 	//Exibir valores
 	printf("original "); 
 	while(atual != NULL){
@@ -199,6 +194,7 @@ int main(){
 		atual = atual->prox;
 	}
 	printf("\nm=%d, n=%d, p=%d\n", m, n, p);
-	 primeiraLista(&lista);
+	primeiraLista(&lista);
+	liberarMemoria(&lista);
 	return 0; 
 }
