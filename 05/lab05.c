@@ -7,7 +7,7 @@
 #include <string.h> 
 
 typedef struct ArvoreArquivo{
-    char *nome;
+    char nome[20];
     int quantidade;
     struct ArvoreArquivo *esq, *dir;
     enum { MENOS, ZERO, MAIS } fator;
@@ -28,36 +28,44 @@ void destruirArvore(ArvoreArquivo **raiz){
  * Excluir determinado arquivo da arvore, o nome do arquivo eh passado por referencia 
  * */
 void excluirItem(char *arquivo){
-    
+
 }
 
 /** 
  * Percorre a arvore inordem e exibe itens em ordem alfabetica 
  * */
-void exibirItens(){
-    
+void exibirItens(ArvoreArquivo *no){
+    if(no != NULL){
+        exibirItens(no->esq);
+        printf("OUTPUT %s \t", no->nome);
+        exibirItens(no->dir);
+    } 
 }
+ 
 
 /* * 
  * Cria novo arquivo na arvore e fazer rotacoes de acordo com o fator de balanceamento  
  * */
-void criarItem(char *arquivo, ArvoreArquivo **raiz){
-    ArvoreArquivo *auxRaiz = *raiz;
-    while(auxRaiz != NULL){
-        int comparacaoString = strcmp(auxRaiz->nome, arquivo);
+void criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
+    char arquivo[20];
+    strcpy(arquivo, nomeArquivo);
+    
+    while(*raiz != NULL){
+        int comparacaoString = strcmp(arquivo, (*raiz)->nome);
+        printf("\nCOMPARACAO: %d\n", comparacaoString);
         if(comparacaoString > 0)
-            auxRaiz = auxRaiz->dir;
-        if(comparacaoString < 0)
-            auxRaiz = auxRaiz->esq;
+            raiz = &(*raiz)->dir;
+        else if(comparacaoString < 0)
+            raiz = &(*raiz)->esq;
         else
-            auxRaiz->quantidade += 1;    
+            (*raiz)->quantidade += 1;    
     }
 
-    auxRaiz = malloc(sizeof(ArvoreArquivo));
-    auxRaiz->nome = arquivo; 
-    auxRaiz->esq = auxRaiz->dir = NULL;
-    auxRaiz->quantidade = 0;
-    printf("ADICIONADO: %s\n", arquivo);
+    *raiz = malloc(sizeof(ArvoreArquivo));
+    strcpy((*raiz)->nome, arquivo); 
+    (*raiz)->esq = (*raiz)->dir = NULL;
+    (*raiz)->quantidade = 0;
+    //printf("ADICIONADO: %s\n\n", arquivo);
 }
 
 
@@ -73,15 +81,17 @@ void leituraItens(){
 
     while(scanf("%s %s", comando, arquivo) == 2 && comando[0]!= 'p'){
         if(comando[0] == 'r' && comando[1] == 'm')
-               excluirItem(arquivo);
+            excluirItem(arquivo);
         else if(comando[0] == 'l' && comando[1] == 's')
-               exibirItens();
+            exibirItens(arvore);
         else if(comando[0] == 't' && comando[4] == 'h')
-                criarItem(arquivo, &arvore);
+            criarItem(arquivo, &arvore);
         else
             printf("Comando invalido!"); 
         printf("Comando %s \t Arquivo %s\n", comando, arquivo);
     }
+    printf("Exibindo itens....");
+    exibirItens(arvore);
 }
 
 int main(){
