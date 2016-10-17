@@ -106,7 +106,7 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
                 if((*raiz)->dir->fator == 1)
                     rotacaoEsquerda(raiz);
                 else if((*raiz)->dir->fator == -1){
-                    rotacaoDireita(raiz);
+                    rotacaoDireita(&(*raiz)->dir);
                     rotacaoEsquerda(raiz);
                 }
             }
@@ -119,10 +119,11 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
             (*raiz)->fator = alturaArvore((*raiz)->dir) - alturaArvore((*raiz)->esq);
             printf("Esquerdo!! Estou em %s e o fator eh %d \n", (*raiz)->nome, (*raiz)->fator);
             if((*raiz)->fator == -2){
-                if((*raiz)->esq->fator == 1)
+                if((*raiz)->esq->fator == 1){
+                    rotacaoEsquerda(&(*raiz)->esq);
                     rotacaoDireita(raiz);
+                }
                 else if((*raiz)->esq->fator == -1){
-                    rotacaoEsquerda(raiz);
                     rotacaoDireita(raiz);
                 }
             }
