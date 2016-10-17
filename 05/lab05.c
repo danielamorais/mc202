@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> 
+#include <string.h>
 
 typedef struct ArvoreArquivo{
     char nome[20];
@@ -25,47 +25,77 @@ void destruirArvore(ArvoreArquivo **raiz){
 }
 
 /**
- * Excluir determinado arquivo da arvore, o nome do arquivo eh passado por referencia 
+ * Excluir determinado arquivo da arvore, o nome do arquivo eh passado por referencia
  * */
 void excluirItem(char *arquivo){
 
 }
 
-/** 
- * Percorre a arvore inordem e exibe itens em ordem alfabetica 
+/**
+ * Percorre a arvore inordem e exibe itens em ordem alfabetica
  * */
 void exibirItens(ArvoreArquivo *no){
     if(no != NULL){
         exibirItens(no->esq);
         printf("OUTPUT %s \t", no->nome);
         exibirItens(no->dir);
-    } 
+    }
 }
- 
 
-/* * 
- * Cria novo arquivo na arvore e fazer rotacoes de acordo com o fator de balanceamento  
- * */
-void criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
-    char arquivo[20];
-    strcpy(arquivo, nomeArquivo);
-    
-    while(*raiz != NULL){
-        int comparacaoString = strcmp(arquivo, (*raiz)->nome);
-        printf("\nCOMPARACAO: %d\n", comparacaoString);
-        if(comparacaoString > 0)
-            raiz = &(*raiz)->dir;
-        else if(comparacaoString < 0)
-            raiz = &(*raiz)->esq;
-        else
-            (*raiz)->quantidade += 1;    
+int alturaArvore(ArvoreArquivo *no){
+    if(no == NULL){
+        return 0;
     }
 
-    *raiz = malloc(sizeof(ArvoreArquivo));
-    strcpy((*raiz)->nome, arquivo); 
-    (*raiz)->esq = (*raiz)->dir = NULL;
-    (*raiz)->quantidade = 0;
-    //printf("ADICIONADO: %s\n\n", arquivo);
+    int alturaEsq = alturaArvore(no->esq);
+    int alturaDir = alturaArvore(no->dir);
+    if(alturaEsq > alturaDir)
+        return alturaEsq + 1;
+    else
+        return alturaDir + 1;
+}
+
+/* *
+ * Cria novo arquivo na arvore e fazer rotacoes de acordo com o fator de balanceamento
+ * */
+int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
+    int aumentou = 0;
+    char arquivo[20];
+    strcpy(arquivo, nomeArquivo);
+
+    if(*raiz == NULL){
+        *raiz = malloc(sizeof(ArvoreArquivo));
+        strcpy((*raiz)->nome, arquivo);
+        (*raiz)->esq = (*raiz)->dir = NULL;
+        (*raiz)->quantidade = 0;
+        (*raiz)->fator = ZERO;
+        return 1; //arvore aumentou
+    }
+
+    int comparacaoString = strcmp(arquivo, (*raiz)->nome);
+    printf("\nCOMPARACAO: %d\n", comparacaoString);
+    if(comparacaoString > 0){
+        aumentou = criarItem(nomeArquivo, &(*raiz)->dir);
+        if(aumentou){
+            printf("Aumentou do lado direito %d!!\n\n", aumentou);
+            int alturad = alturaArvore((*raiz)->dir);
+            int alturae = alturaArvore((*raiz)->esq);
+            printf("Estou no %s e o fator eh %d \n\n", (*raiz)->nome,alturad - alturae);
+        }else
+            aumentou = 0;
+    }
+    else if(comparacaoString < 0){
+        aumentou = criarItem(nomeArquivo, &(*raiz)->esq);
+        if(aumentou){
+            printf("Aumentou do lado esquerdo!!\n\n");
+        }else
+            aumentou = 0;
+    }
+    else{
+        (*raiz)->quantidade += 1;
+    }
+     
+   return aumentou; 
 }
 
 
@@ -76,7 +106,7 @@ void leituraItens(){
     char comando[5];
     char arquivo[20];
 
-    //FIXME: Mudar para EOF
+    //FIXME: Mudar para EOF e consertar ls
     //while(scanf("$s %s", comando, arquivo) != EOF){
 
     while(scanf("%s %s", comando, arquivo) == 2 && comando[0]!= 'p'){
@@ -87,7 +117,7 @@ void leituraItens(){
         else if(comando[0] == 't' && comando[4] == 'h')
             criarItem(arquivo, &arvore);
         else
-            printf("Comando invalido!"); 
+            printf("Comando invalido!");
         printf("Comando %s \t Arquivo %s\n", comando, arquivo);
     }
     printf("Exibindo itens....");
