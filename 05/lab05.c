@@ -10,7 +10,7 @@ typedef struct ArvoreArquivo{
     char nome[20];
     int quantidade;
     struct ArvoreArquivo *esq, *dir;
-    enum { MENOS, ZERO, MAIS } fator;
+    int fator;
 } ArvoreArquivo;
 
 ArvoreArquivo *arvore;
@@ -22,6 +22,32 @@ void iniciarArvore(ArvoreArquivo **raiz){
 //TODO
 void destruirArvore(ArvoreArquivo **raiz){
 
+}
+
+//girando a para a esquerda
+void rotacaoEsquerda(ArvoreArquivo **raiz){
+    ArvoreArquivo *a, *c;
+    a = *raiz;
+    c = a->dir;
+
+    *raiz = c;
+    a->dir = c->esq;
+    c->esq = a;
+}
+
+//girando b para a direita 
+void rotacaoDireita(ArvoreArquivo **raiz){
+    ArvoreArquivo *b, *a;
+    b = *raiz;
+    a = b->esq;
+
+    *raiz = a;
+    if(b->esq == NULL){
+        printf("Passou da 45rs");
+        a->dir = NULL;
+    }else
+        b->esq = a->dir;
+    a->dir = b;
 }
 
 /**
@@ -68,7 +94,7 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
         strcpy((*raiz)->nome, arquivo);
         (*raiz)->esq = (*raiz)->dir = NULL;
         (*raiz)->quantidade = 0;
-        (*raiz)->fator = ZERO;
+        (*raiz)->fator = 0;
         return 1; //arvore aumentou
     }
 
@@ -78,16 +104,23 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
         aumentou = criarItem(nomeArquivo, &(*raiz)->dir);
         if(aumentou){
             printf("Aumentou do lado direito %d!!\n\n", aumentou);
-            int alturad = alturaArvore((*raiz)->dir);
-            int alturae = alturaArvore((*raiz)->esq);
-            printf("Estou no %s e o fator eh %d \n\n", (*raiz)->nome,alturad - alturae);
+            (*raiz)->fator = alturaArvore((*raiz)->dir) - alturaArvore((*raiz)->esq);
+            printf("Estou no %s e o fator eh %d \n\n", (*raiz)->nome, (*raiz)->fator);
+            if((*raiz)->fator == 2){
+                if((*raiz)->dir->fator == 1)
+                    rotacaoEsquerda(raiz);
+                if((*raiz)->dir->fator == -1){
+                    rotacaoDireita(raiz);
+                    rotacaoEsquerda(raiz);
+                }
+            }
         }else
             aumentou = 0;
     }
     else if(comparacaoString < 0){
         aumentou = criarItem(nomeArquivo, &(*raiz)->esq);
         if(aumentou){
-            printf("Aumentou do lado esquerdo!!\n\n");
+            printf("Aumentou do lado esquerdo!!\n");
         }else
             aumentou = 0;
     }
