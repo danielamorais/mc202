@@ -26,13 +26,13 @@ void destruirArvore(ArvoreArquivo **raiz){
 
 //girando a para a esquerda
 void rotacaoEsquerda(ArvoreArquivo **raiz){
-    ArvoreArquivo *a, *c;
+    ArvoreArquivo *a, *b;
     a = *raiz;
-    c = a->dir;
+    b = a->dir;
 
-    *raiz = c;
-    a->dir = c->esq;
-    c->esq = a;
+    *raiz = b;
+    a->dir = b->esq;
+    b->esq = a;
 }
 
 //girando b para a direita 
@@ -42,11 +42,7 @@ void rotacaoDireita(ArvoreArquivo **raiz){
     a = b->esq;
 
     *raiz = a;
-    if(b->esq == NULL){
-        printf("Passou da 45rs");
-        a->dir = NULL;
-    }else
-        b->esq = a->dir;
+    b->esq = a->dir;
     a->dir = b;
 }
 
@@ -99,7 +95,7 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
     }
 
     int comparacaoString = strcmp(arquivo, (*raiz)->nome);
-    printf("\nCOMPARACAO: %d\n", comparacaoString);
+    printf("\nCOMPARACAO entre %s e %s: %d\n", arquivo, (*raiz)->nome, comparacaoString);
     if(comparacaoString > 0){
         aumentou = criarItem(nomeArquivo, &(*raiz)->dir);
         if(aumentou){
@@ -109,7 +105,7 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
             if((*raiz)->fator == 2){
                 if((*raiz)->dir->fator == 1)
                     rotacaoEsquerda(raiz);
-                if((*raiz)->dir->fator == -1){
+                else if((*raiz)->dir->fator == -1){
                     rotacaoDireita(raiz);
                     rotacaoEsquerda(raiz);
                 }
@@ -120,7 +116,16 @@ int criarItem(char *nomeArquivo, ArvoreArquivo **raiz){
     else if(comparacaoString < 0){
         aumentou = criarItem(nomeArquivo, &(*raiz)->esq);
         if(aumentou){
-            printf("Aumentou do lado esquerdo!!\n");
+            (*raiz)->fator = alturaArvore((*raiz)->dir) - alturaArvore((*raiz)->esq);
+            printf("Esquerdo!! Estou em %s e o fator eh %d \n", (*raiz)->nome, (*raiz)->fator);
+            if((*raiz)->fator == -2){
+                if((*raiz)->esq->fator == 1)
+                    rotacaoDireita(raiz);
+                else if((*raiz)->esq->fator == -1){
+                    rotacaoEsquerda(raiz);
+                    rotacaoDireita(raiz);
+                }
+            }
         }else
             aumentou = 0;
     }
