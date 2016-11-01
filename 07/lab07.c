@@ -1,3 +1,7 @@
+/** Daniela Marques de Morais - 169562 
+ *  Laboratorio de MC202 sobre Fila de Prioridade
+ **/
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -36,22 +40,24 @@ void exibirVetor(ElementoCache array[], int tamanho){
 }
 
 /* Realiza leitura de itens e guarda os elementos lidos num array */  
-void leituraItens(){
+ElementoCache* leituraItens(){
     unsigned short int tamanhoCache;
     unsigned int qtdElementos;
     unsigned int solicitacoes;
     int elemento; 
     scanf("%hu %d %d", &tamanhoCache, &qtdElementos, &solicitacoes);
-    ElementoCache dadosSolicitacoes[qtdElementos];  
+    //FIXME
+    ElementoCache *dadosSolicitacoes = malloc(qtdElementos * sizeof(ElementoCache));  
     inicializarVetor(dadosSolicitacoes, qtdElementos);
     for(int i = 0; i < solicitacoes; i++){
         scanf("%d", &elemento);
         verificarElemento(dadosSolicitacoes, qtdElementos, elemento);
     }
     exibirVetor(dadosSolicitacoes, qtdElementos);
+    return dadosSolicitacoes;
 }
 
 int main(){
-    leituraItens();
+    ElementoCache *dadosSolicitacoes = leituraItens();
     return 0;
 }
