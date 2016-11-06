@@ -119,7 +119,8 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
     int contemPosicaoVazia = 0;
     if(heap[i].elemento == -1){
         heap[1] = item;
-        ++contador; 
+        contador++;
+        printf("Primeiro elemento.... %d\n", contador);
     }else{
         int posicaoVazia = 0;
         for(int i = 2; i < tamanhoCache; i++){
@@ -132,7 +133,8 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
         //Tornar o minimo sempre a raiz da arvore
         if(contemPosicaoVazia == 1){
             heap[posicaoVazia] = item;
-            ++contador; 
+            contador++;
+            printf("COntem posicao vazia..... %d\n", contador);
             if((posicaoVazia/2) != 0){ //FIXME: Posicao vazia nunca sera 0
                 while(posicaoVazia != 1 && (heap[posicaoVazia].quantidade < heap[posicaoVazia/2].quantidade)){
                     ElementoCache temporario = heap[posicaoVazia/2];
@@ -148,7 +150,6 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
                 //Nao executa nada
             }else{
             //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
-            ++contador;
             heap[1] = heap[tamanhoCache-1];
             heap[tamanhoCache-1].elemento = -1;
             heap[tamanhoCache-1].quantidade = 0;
