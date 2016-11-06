@@ -20,6 +20,7 @@ typedef struct InfoCache{
 int contador = 0;
 unsigned int contadorElementos = 0; //FIXME refatorar
 unsigned short int tamanhoCache;
+InfoCache informacoesCache;
 
 /* Checa se o elemento existe no array, se nao existir eh adicionado */
 void verificarElemento(ElementoCache array[], int tamanho, int elemento){
@@ -56,7 +57,6 @@ void exibirVetor(ElementoCache array[], int tamanho){
 InfoCache leituraItens(){
     unsigned int solicitacoes;
     int elemento;
-    InfoCache informacoesCache;
     unsigned int qtdElementos;
 
     scanf("%hu %d %d", &tamanhoCache, &qtdElementos, &solicitacoes);
@@ -120,7 +120,6 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
     if(heap[i].elemento == -1){
         heap[1] = item;
         contador++;
-        printf("Primeiro elemento.... %d\n", contador);
     }else{
         int posicaoVazia = 0;
         for(int i = 2; i < tamanhoCache; i++){
@@ -134,7 +133,6 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
         if(contemPosicaoVazia == 1){
             heap[posicaoVazia] = item;
             contador++;
-            printf("COntem posicao vazia..... %d\n", contador);
             if((posicaoVazia/2) != 0){ //FIXME: Posicao vazia nunca sera 0
                 while(posicaoVazia != 1 && (heap[posicaoVazia].quantidade < heap[posicaoVazia/2].quantidade)){
                     ElementoCache temporario = heap[posicaoVazia/2];
@@ -157,8 +155,6 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
             }
         }
     }
-    exibirVetor(heap, 2);
-    printf("\n\n");
 }
 
 void lerSolicitacoes(ElementoCache heap[], InfoCache *informacoes){
@@ -177,6 +173,8 @@ int main(){
     ElementoCache *heap = malloc(tamanhoCache * sizeof(ElementoCache));
     inicializarVetor(heap, tamanhoCache, 1);
     lerSolicitacoes(heap, &informacoes);
-    printf("Contador \t %d", contador);
+    printf("%d", contador);
+    free(heap);
+    free(informacoesCache.elementos);
     return 0;
 }
