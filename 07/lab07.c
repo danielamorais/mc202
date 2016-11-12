@@ -79,6 +79,15 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
     ElementoCache *heap = *pointerHeap;
     int pos = 1;
     if(pos*2 < tamanhoCache && ((2*pos)+1) < tamanhoCache){
+        if(((2*pos)+1) >= tamanhoCache){
+            if(heap[pos].quantidade < heap[pos*2].quantidade){
+                ElementoCache *maiorFilho = &heap[2*pos];
+                ElementoCache paiTemp = heap[pos];
+                heap[pos] = *maiorFilho;
+                *maiorFilho = paiTemp;
+            }
+            return ;
+        }
 
         while(heap[pos].quantidade < heap[pos*2].quantidade || heap[pos].quantidade < heap[(2*pos)+1].quantidade){
             //if(heap[2*pos].elemento == -1)
@@ -153,7 +162,8 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
             heap[posicaoVazia] = item;
             contador++;
             if((posicaoVazia/2) != 0){ //FIXME: Posicao vazia nunca sera 0
-                while(posicaoVazia != 1 && (heap[posicaoVazia].quantidade > heap[posicaoVazia/2].quantidade)){
+                //Verifica se o filho eh maior que o pai
+                while((heap[posicaoVazia].quantidade > heap[posicaoVazia/2].quantidade)){
                     ElementoCache temporario = heap[posicaoVazia/2];
                     heap[posicaoVazia/2] = heap[posicaoVazia];
                     heap[posicaoVazia] = temporario;
@@ -164,7 +174,7 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
         }else{
             //Verificar se o elemento ja esta no heap
             if(contemElemento(item, &heap) == 1){
-                //Nao executa nada
+                ajustarRemocaoMinimo(&heap);
             }else{
                 //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
                 heap[1] = heap[tamanhoCache-1];
