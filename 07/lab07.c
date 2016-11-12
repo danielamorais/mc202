@@ -116,8 +116,8 @@ int contemElemento(ElementoCache elemento, ElementoCache **pointerHeap){
     ElementoCache *heap = *pointerHeap;
     for(int i = 1; i < tamanhoCache; i++){
         if(heap[i].elemento == elemento.elemento){
-            heap[i] = elemento; 
-            return 1;        
+            heap[i] = elemento;
+            return 1;
         }
     }
     return 0;
@@ -149,6 +149,12 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
         heap[1] = item;
         contador++;
     }else{
+
+        //Verificar se o elemento ja esta no heap
+        if(contemElemento(item, &heap) == 1){
+            ajustarRemocaoMinimo(&heap);
+            return ;
+        }
         int posicaoVazia = 0;
         for(int i = 2; i < tamanhoCache; i++){
             if(heap[i].elemento == -1){
@@ -172,17 +178,12 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
                 }
             }
         }else{
-            //Verificar se o elemento ja esta no heap
-            if(contemElemento(item, &heap) == 1){
-                ajustarRemocaoMinimo(&heap);
-            }else{
-                //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
-                heap[1] = heap[tamanhoCache-1];
-                heap[tamanhoCache-1].elemento = -1;
-                heap[tamanhoCache-1].quantidade = 0;
-                ajustarRemocaoMinimo(&heap);
-                adicionarElemento(heap, item);
-            }
+            //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
+            heap[1] = heap[tamanhoCache-1];
+            heap[tamanhoCache-1].elemento = -1;
+            heap[tamanhoCache-1].quantidade = 0;
+            ajustarRemocaoMinimo(&heap);
+            adicionarElemento(heap, item);
         }
     }
 }
