@@ -103,11 +103,13 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
 }
 
 /* Verificar se determinado elemento esta no heap */
-int contemElemento(int elemento, ElementoCache **pointerHeap){
+int contemElemento(ElementoCache elemento, ElementoCache **pointerHeap){
     ElementoCache *heap = *pointerHeap;
     for(int i = 1; i < tamanhoCache; i++){
-        if(heap[i].elemento == elemento)
-            return 1;
+        if(heap[i].elemento == elemento.elemento){
+            heap[i] = elemento; 
+            return 1;        
+        }
     }
     return 0;
 }
@@ -161,7 +163,7 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
             }
         }else{
             //Verificar se o elemento ja esta no heap
-            if(contemElemento(item.elemento, &heap) == 1){
+            if(contemElemento(item, &heap) == 1){
                 //Nao executa nada
             }else{
                 //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
