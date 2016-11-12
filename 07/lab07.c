@@ -201,7 +201,7 @@ int main(){
     alterarPrioridade(&(informacoes.elementos), informacoes.qtdSolicitacoes);
     lerSolicitacoes(heap, &informacoes);
     printf("%d", contador);
-    //  free(heap);
-    //    free(informacoesCache.elementos);
+    free(heap);
+    free(informacoesCache.elementos);
     return 0;
 }
