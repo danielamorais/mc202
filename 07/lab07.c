@@ -65,13 +65,12 @@ InfoCache leituraItens(){
     informacoesCache.qtdElementos = qtdElementos;
 
     for(int i = 0; i < solicitacoes; i++){
-        printf("i %d", i);
         scanf("%d", &elemento);
         informacoesCache.elementos[i].elemento = elemento;
         informacoesCache.elementos[i].quantidade = 0;
     }
-    printf("Exibir vetor...\n");
-    exibirVetor(informacoesCache.elementos, solicitacoes);
+    //printf("Exibir vetor...\n");
+    //exibirVetor(informacoesCache.elementos, solicitacoes);
     return informacoesCache;
 }
 
@@ -79,24 +78,27 @@ InfoCache leituraItens(){
 void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
     ElementoCache *heap = *pointerHeap;
     int pos = 1;
-    while(heap[pos].quantidade > heap[pos*2].quantidade || heap[pos].quantidade > heap[(2*pos)+1].quantidade){
-        if(heap[2*pos].elemento == -1)
-            break;
-        ElementoCache *menorFilho;
-        int posFilho = 0;
-        if(heap[2*pos].quantidade < heap[(2*pos)+1].quantidade){
-            menorFilho = &heap[2*pos];
-            posFilho = 2*pos;
+    if(pos*2 < tamanhoCache && ((2*pos)+1) < tamanhoCache){
+
+        while(heap[pos].quantidade < heap[pos*2].quantidade || heap[pos].quantidade < heap[(2*pos)+1].quantidade){
+            if(heap[2*pos].elemento == -1)
+                break;
+            ElementoCache *menorFilho;
+            int posFilho = 0;
+            if(heap[2*pos].quantidade > heap[(2*pos)+1].quantidade){
+                menorFilho = &heap[2*pos];
+                posFilho = 2*pos;
+            }
+            else{
+                menorFilho = &heap[(2*pos)+1];
+                posFilho = (2*pos)+1;
+            }
+            ElementoCache paiTemp = heap[pos];
+            heap[pos] = *menorFilho;
+            *menorFilho = paiTemp;
+            pos = posFilho;
+            if(posFilho >= tamanhoCache) break;
         }
-        else{
-            menorFilho = &heap[(2*pos)+1];
-            posFilho = (2*pos)+1;
-        }
-        ElementoCache paiTemp = heap[pos];
-        heap[pos] = *menorFilho;
-        *menorFilho = paiTemp;
-        pos = posFilho;
-        if(posFilho >= tamanhoCache) break;
     }
 }
 
@@ -110,12 +112,21 @@ int contemElemento(int elemento, ElementoCache **pointerHeap){
     return 0;
 }
 
-void alterarPrioridade(ElementoCache heap[], int proximosElementos[], int tamanho){
-    printf("Os proximos elementos sao: \t");
-    for(int i = 1; i < tamanho; i++){
-        printf(" %d ", proximosElementos[i]);
+void alterarPrioridade(ElementoCache **pointElementos, int tamanho){
+    ElementoCache *elementos = *pointElementos;
+    //printf("Os proximos elementos sao: \t");
+    for(int i = 0; i < tamanho; i++){
+        for(int j = i+1; j < tamanho; j++){
+            //printf("Comparando %d com %d ", elementos[i].elemento, elementos[j].elemento);
+            if(elementos[i].elemento == elementos[j].elemento){
+                elementos[i].quantidade = j;
+                break;
+            }
+            elementos[i].quantidade = 10001;
+        }
+        // printf(" %d-%d ", elementos[i].elemento, elementos[i].quantidade);
     }
-    printf("\n\n");
+    // printf("\n\n");
 }
 
 /* Ira inserir o elemento na ultima posicao do array e ajustar de acordo com a prioridade. O heap possuir -1 como elemento significa que eh uma posicao vazia */
@@ -135,12 +146,12 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
                 break;
             }
         }
-        //Tornar o minimo sempre a raiz da arvore
+        //Tornar o maximo sempre a raiz da arvore
         if(contemPosicaoVazia == 1){
             heap[posicaoVazia] = item;
             contador++;
             if((posicaoVazia/2) != 0){ //FIXME: Posicao vazia nunca sera 0
-                while(posicaoVazia != 1 && (heap[posicaoVazia].quantidade < heap[posicaoVazia/2].quantidade)){
+                while(posicaoVazia != 1 && (heap[posicaoVazia].quantidade > heap[posicaoVazia/2].quantidade)){
                     ElementoCache temporario = heap[posicaoVazia/2];
                     heap[posicaoVazia/2] = heap[posicaoVazia];
                     heap[posicaoVazia] = temporario;
@@ -158,6 +169,7 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
                 heap[tamanhoCache-1].elemento = -1;
                 heap[tamanhoCache-1].quantidade = 0;
                 ajustarRemocaoMinimo(&heap);
+                adicionarElemento(heap, item);
             }
         }
     }
@@ -165,9 +177,7 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
 
 void lerSolicitacoes(ElementoCache heap[], InfoCache *informacoes){
     for(int i = 0; i < informacoes->qtdSolicitacoes; i++){
-        //adicionarElemento(heap, informacoes->elementos[i]); 
-        alterarPrioridade(heap, &(informacoes->elementos[i]), (informacoes->qtdSolicitacoes)-(i+1));
-        //alterarPrioridade(heap, &(informacoes->elementos[i]), (informacoes->qtdSolicitacoes)-(i+1));
+        adicionarElemento(heap, informacoes->elementos[i]);
     }
 }
 
@@ -176,9 +186,10 @@ int main(){
     tamanhoCache++;
     ElementoCache *heap = malloc(tamanhoCache * sizeof(ElementoCache));
     inicializarVetor(heap, tamanhoCache, 1);
+    alterarPrioridade(&(informacoes.elementos), informacoes.qtdSolicitacoes);
     lerSolicitacoes(heap, &informacoes);
     printf("%d", contador);
-    free(heap);
-    free(informacoesCache.elementos);
+    //  free(heap);
+    //    free(informacoesCache.elementos);
     return 0;
 }
