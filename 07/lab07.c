@@ -11,8 +11,7 @@ typedef struct ElementoCache{
 } ElementoCache;
 
 typedef struct InfoCache{
-    ElementoCache *dadosSolicitacoes;
-    int *elementos;
+    ElementoCache *elementos;
     int qtdSolicitacoes;
     unsigned int qtdElementos;
 } InfoCache;
@@ -47,10 +46,10 @@ void inicializarVetor(ElementoCache array[], int tamanho, int vetorHeap){
 }
 
 void exibirVetor(ElementoCache array[], int tamanho){
-    tamanho++;
     for(int i = 0; i < tamanho; i++){
-        printf("Elemento: %d \t Quantidade %d\n", array[i].elemento, array[i].quantidade);
+        printf("Elemento: %d \t ", array[i].elemento);
     }
+    printf("\n");
 }
 
 /* Realiza leitura de itens e guarda os elementos lidos num array */
@@ -61,31 +60,30 @@ InfoCache leituraItens(){
 
     scanf("%hu %d %d", &tamanhoCache, &qtdElementos, &solicitacoes);
 
-    //FIXME usar malloc
-    informacoesCache.dadosSolicitacoes = malloc(qtdElementos * sizeof(ElementoCache));
-    inicializarVetor(informacoesCache.dadosSolicitacoes, qtdElementos, 0);
-    informacoesCache.elementos = malloc(solicitacoes * sizeof(int));
+    informacoesCache.elementos = malloc(solicitacoes * sizeof(ElementoCache));
     informacoesCache.qtdSolicitacoes = solicitacoes;
     informacoesCache.qtdElementos = qtdElementos;
 
     for(int i = 0; i < solicitacoes; i++){
+        printf("i %d", i);
         scanf("%d", &elemento);
-        verificarElemento(informacoesCache.dadosSolicitacoes, qtdElementos, elemento);
-        informacoesCache.elementos[i] = elemento;
+        informacoesCache.elementos[i].elemento = elemento;
+        informacoesCache.elementos[i].quantidade = 0;
     }
-    //exibirVetor(informacoesCache.dadosSolicitacoes, qtdElementos);
+    printf("Exibir vetor...\n");
+    exibirVetor(informacoesCache.elementos, solicitacoes);
     return informacoesCache;
 }
 
 /* Ajusta arvore para que continue sendo heap apos a remocao da raiz */
 void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
-    ElementoCache *heap = *pointerHeap; 
+    ElementoCache *heap = *pointerHeap;
     int pos = 1;
     while(heap[pos].quantidade > heap[pos*2].quantidade || heap[pos].quantidade > heap[(2*pos)+1].quantidade){
         if(heap[2*pos].elemento == -1)
             break;
         ElementoCache *menorFilho;
-        int posFilho = 0; 
+        int posFilho = 0;
         if(heap[2*pos].quantidade < heap[(2*pos)+1].quantidade){
             menorFilho = &heap[2*pos];
             posFilho = 2*pos;
@@ -94,11 +92,11 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
             menorFilho = &heap[(2*pos)+1];
             posFilho = (2*pos)+1;
         }
-       ElementoCache paiTemp = heap[pos];
-       heap[pos] = *menorFilho;
-       *menorFilho = paiTemp; 
-       pos = posFilho;
-       if(posFilho >= tamanhoCache) break; 
+        ElementoCache paiTemp = heap[pos];
+        heap[pos] = *menorFilho;
+        *menorFilho = paiTemp;
+        pos = posFilho;
+        if(posFilho >= tamanhoCache) break;
     }
 }
 
@@ -110,6 +108,14 @@ int contemElemento(int elemento, ElementoCache **pointerHeap){
             return 1;
     }
     return 0;
+}
+
+void alterarPrioridade(ElementoCache heap[], int proximosElementos[], int tamanho){
+    printf("Os proximos elementos sao: \t");
+    for(int i = 1; i < tamanho; i++){
+        printf(" %d ", proximosElementos[i]);
+    }
+    printf("\n\n");
 }
 
 /* Ira inserir o elemento na ultima posicao do array e ajustar de acordo com a prioridade. O heap possuir -1 como elemento significa que eh uma posicao vazia */
@@ -143,15 +149,15 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
                 }
             }
         }else{
-            //Verificar se o elemento ja esta no heap 
+            //Verificar se o elemento ja esta no heap
             if(contemElemento(item.elemento, &heap) == 1){
                 //Nao executa nada
             }else{
-            //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
-            heap[1] = heap[tamanhoCache-1];
-            heap[tamanhoCache-1].elemento = -1;
-            heap[tamanhoCache-1].quantidade = 0;
-            ajustarRemocaoMinimo(&heap);
+                //Remover a raiz da arvore. A nova raiz deve ser o ultimo elemento do heap
+                heap[1] = heap[tamanhoCache-1];
+                heap[tamanhoCache-1].elemento = -1;
+                heap[tamanhoCache-1].quantidade = 0;
+                ajustarRemocaoMinimo(&heap);
             }
         }
     }
@@ -159,11 +165,9 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
 
 void lerSolicitacoes(ElementoCache heap[], InfoCache *informacoes){
     for(int i = 0; i < informacoes->qtdSolicitacoes; i++){
-        for(int j = 0; j < informacoes->qtdElementos; j++){
-            if(informacoes->elementos[i] == informacoes->dadosSolicitacoes[j].elemento){
-                adicionarElemento(heap, informacoes->dadosSolicitacoes[j]);
-            }
-        }
+        //adicionarElemento(heap, informacoes->elementos[i]); 
+        alterarPrioridade(heap, &(informacoes->elementos[i]), (informacoes->qtdSolicitacoes)-(i+1));
+        //alterarPrioridade(heap, &(informacoes->elementos[i]), (informacoes->qtdSolicitacoes)-(i+1));
     }
 }
 
