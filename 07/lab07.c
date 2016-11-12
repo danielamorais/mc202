@@ -81,23 +81,23 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
     if(pos*2 < tamanhoCache && ((2*pos)+1) < tamanhoCache){
 
         while(heap[pos].quantidade < heap[pos*2].quantidade || heap[pos].quantidade < heap[(2*pos)+1].quantidade){
-            if(heap[2*pos].elemento == -1)
-                break;
-            ElementoCache *menorFilho;
+            //if(heap[2*pos].elemento == -1)
+            //    break;
+            ElementoCache *maiorFilho;
             int posFilho = 0;
             if(heap[2*pos].quantidade > heap[(2*pos)+1].quantidade){
-                menorFilho = &heap[2*pos];
+                maiorFilho = &heap[2*pos];
                 posFilho = 2*pos;
             }
             else{
-                menorFilho = &heap[(2*pos)+1];
+                maiorFilho = &heap[(2*pos)+1];
                 posFilho = (2*pos)+1;
             }
             ElementoCache paiTemp = heap[pos];
-            heap[pos] = *menorFilho;
-            *menorFilho = paiTemp;
+            heap[pos] = *maiorFilho;
+            *maiorFilho = paiTemp;
             pos = posFilho;
-            if(posFilho >= tamanhoCache) break;
+            if(pos >= tamanhoCache || (pos*2) >= tamanhoCache) break;
         }
     }
 }
