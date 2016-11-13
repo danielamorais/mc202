@@ -106,7 +106,7 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
             heap[pos] = *maiorFilho;
             *maiorFilho = paiTemp;
             pos = posFilho;
-            if(pos >= tamanhoCache || (pos*2) >= tamanhoCache) break;
+            if(pos >= (tamanhoCache-1) || (pos*2) >= (tamanhoCache-1)) break;
         }
     }
 }
