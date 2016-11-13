@@ -23,7 +23,8 @@ InfoCache informacoesCache;
 
 /* Checa se o elemento existe no array, se nao existir eh adicionado */
 void verificarElemento(ElementoCache array[], int tamanho, int elemento){
-    for(int i = 0; i < tamanho; i++){
+   int i = 0; 
+   for(i = 0; i < tamanho; i++){
         if(array[i].elemento == elemento){
             array[i].quantidade += 1;
             return ;
@@ -36,7 +37,8 @@ void verificarElemento(ElementoCache array[], int tamanho, int elemento){
 }
 
 void inicializarVetor(ElementoCache array[], int tamanho, int vetorHeap){
-    for(int i = 0; i < tamanho; i++){
+    int i = 0;
+    for(i = 0; i < tamanho; i++){
         array[i].quantidade = 0;
         if(vetorHeap == 0)
             array[i].elemento = 0;
@@ -46,7 +48,8 @@ void inicializarVetor(ElementoCache array[], int tamanho, int vetorHeap){
 }
 
 void exibirVetor(ElementoCache array[], int tamanho){
-    for(int i = 0; i < tamanho; i++){
+    int i = 0;
+    for(i = 0; i < tamanho; i++){
         printf("Elemento: %d \t ", array[i].elemento);
     }
     printf("\n");
@@ -63,8 +66,9 @@ InfoCache leituraItens(){
     informacoesCache.elementos = malloc(solicitacoes * sizeof(ElementoCache));
     informacoesCache.qtdSolicitacoes = solicitacoes;
     informacoesCache.qtdElementos = qtdElementos;
-
-    for(int i = 0; i < solicitacoes; i++){
+	
+    int i = 0;
+    for(i = 0; i < solicitacoes; i++){
         scanf("%d", &elemento);
         informacoesCache.elementos[i].elemento = elemento;
         informacoesCache.elementos[i].quantidade = 0;
@@ -94,11 +98,10 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
             //    break;
             ElementoCache *maiorFilho;
             int posFilho = 0;
-            if(heap[2*pos].quantidade > heap[(2*pos)+1].quantidade){
+            if((heap[2*pos].quantidade > heap[(2*pos)+1].quantidade) || (heap[2*pos].quantidade == heap[(2*pos)+1].quantidade)){
                 maiorFilho = &heap[2*pos];
                 posFilho = 2*pos;
-            }
-            else{
+            }else if(heap[2*pos].quantidade < heap[(2*pos)+1].quantidade){
                 maiorFilho = &heap[(2*pos)+1];
                 posFilho = (2*pos)+1;
             }
@@ -111,10 +114,11 @@ void ajustarRemocaoMinimo(ElementoCache **pointerHeap){
     }
 }
 
-/* Verificar se determinado elemento esta no heap */
+/* Verificar se determinado elemento esta no heap e o substitui */
 int contemElemento(ElementoCache elemento, ElementoCache **pointerHeap){
     ElementoCache *heap = *pointerHeap;
-    for(int i = 1; i < tamanhoCache; i++){
+    int i = 0;
+    for(i = 1; i < tamanhoCache; i++){
         if(heap[i].elemento == elemento.elemento){
             heap[i] = elemento;
             return 1;
@@ -126,8 +130,10 @@ int contemElemento(ElementoCache elemento, ElementoCache **pointerHeap){
 void alterarPrioridade(ElementoCache **pointElementos, int tamanho){
     ElementoCache *elementos = *pointElementos;
     //printf("Os proximos elementos sao: \t");
-    for(int i = 0; i < tamanho; i++){
-        for(int j = i+1; j < tamanho; j++){
+    int i = 0;
+    int j = 0;
+    for(i = 0; i < tamanho; i++){
+        for(j = i+1; j < tamanho; j++){
             //printf("Comparando %d com %d ", elementos[i].elemento, elementos[j].elemento);
             if(elementos[i].elemento == elementos[j].elemento){
                 elementos[i].quantidade = j;
@@ -156,7 +162,7 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
             return ;
         }
         int posicaoVazia = 0;
-        for(int i = 2; i < tamanhoCache; i++){
+        for(i = 2; i < tamanhoCache; i++){
             if(heap[i].elemento == -1){
                 contemPosicaoVazia = 1;
                 posicaoVazia = i;
@@ -189,7 +195,8 @@ void adicionarElemento(ElementoCache heap[], ElementoCache item){
 }
 
 void lerSolicitacoes(ElementoCache heap[], InfoCache *informacoes){
-    for(int i = 0; i < informacoes->qtdSolicitacoes; i++){
+    int i = 0;
+    for(i = 0; i < informacoes->qtdSolicitacoes; i++){
         adicionarElemento(heap, informacoes->elementos[i]);
     }
 }
