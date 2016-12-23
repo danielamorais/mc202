@@ -68,6 +68,22 @@ void removerPrimeiroCaso(ArvoreAvl **no, ArvoreAvl **arvore){
     free(temp);
 }
 
+/**
+ * Remover caso em que os dois filhos sao NAO vazios
+ * */
+void removerSegundoCaso(ArvoreAvl **no, ArvoreAvl **arvore){
+    ArvoreAvl *raiz = *arvore;
+    ArvoreAvl **sucessor = &((*no)->dir);
+    while((*sucessor)->esq != NULL){
+        sucessor = &((*sucessor)->esq);
+    }
+    ArvoreAvl *elementoRemover = *sucessor;
+    int dado = (*sucessor)->dado;
+    removerPrimeiroCaso(&elementoRemover, &raiz);
+
+    (*no)->dado = dado;
+}
+
 void removerElemento(ArvoreAvl **arv, int dado){
     ArvoreAvl *raiz = *arv;
     //Procurar elemento
@@ -79,6 +95,7 @@ void removerElemento(ArvoreAvl **arv, int dado){
         }
     }
     if((*arv)->dir != NULL && (*arv)->esq != NULL){
+        removerSegundoCaso(&(*arv), &raiz);
         printf("Remover segundo caso nao pronto.. \n");
     }else{
         removerPrimeiroCaso(&(*arv), &raiz);
@@ -126,17 +143,17 @@ int main(){
     inserirArvore(&arvore, 3);
     inserirArvore(&arvore, 13);
     inserirArvore(&arvore, 1);
-    inserirArvore(&arvore, 10);
+    inserirArvore(&arvore, 11);
     inserirArvore(&arvore, 7);
     inserirArvore(&arvore, 14);
     inserirArvore(&arvore, 4);
     inserirArvore(&arvore, 12);
-    inserirArvore(&arvore, 5);
-    inserirArvore(&arvore, 11);
+    inserirArvore(&arvore, 9);
+    inserirArvore(&arvore, 10);
     printf("Mandando exibir...\n");
     exibirArvore(&arvore);
     printf("\nMandando remover..\n");
-    removerElemento(&arvore, 10);
+    removerElemento(&arvore, 8);
     printf("\nExibir apos remocao..\n");
     exibirArvore(&arvore);
     liberarMemoria(&arvore);
