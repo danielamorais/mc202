@@ -29,6 +29,14 @@ void inserirArvore(ArvoreAvl **arv, int dado){
     (*arv)->dado = dado;
 }
 
+void liberarMemoria(ArvoreAvl **arv){
+    if(*arv != NULL){
+        liberarMemoria(&((*arv)->dir));
+        liberarMemoria(&((*arv)->esq));
+        free(*arv);
+    }
+}
+
 /**
  * Percorrer arvore inordem
  * */
@@ -53,6 +61,6 @@ int main(){
     inserirArvore(&arvore, 3);
     printf("Mandando exibir...\n");
     exibirArvore(&arvore);
-
+    liberarMemoria(&arvore);
     return 0;
 }
