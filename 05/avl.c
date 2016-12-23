@@ -40,6 +40,28 @@ ArvoreAvl** buscarAntecessor(ArvoreAvl **avl, int dado){
 
 }
 
+int alturaArvore(ArvoreAvl **no){
+    if(*no == NULL){
+        return 0;
+    }
+
+    int alturaEsq = alturaArvore(&((*no)->esq));
+    int alturaDir = alturaArvore(&((*no)->dir));
+    if(alturaEsq > alturaDir)
+        return alturaEsq + 1;
+    else
+        return alturaDir + 1;
+}
+
+/* *
+ * Verificar se arvore esta balanceada
+ * */
+void verificarFator(ArvoreAvl **arv){
+    ArvoreAvl *raiz = *arv;
+    raiz->fator = alturaArvore(&(raiz->dir)) - alturaArvore(&(raiz->esq)); 
+    printf("\nO fator eh %d\n", raiz->fator);
+}
+
 /**
  * Remover caso em que pelo menos um filho eh vazio
  * */
@@ -103,6 +125,7 @@ void removerElemento(ArvoreAvl **arv, int dado){
 }
 
 void inserirArvore(ArvoreAvl **arv, int dado){
+    ArvoreAvl *raiz = *arv;
     while(*arv != NULL){
         if(dado > (*arv)->dado){
             arv = &((*arv)->dir);
@@ -114,6 +137,7 @@ void inserirArvore(ArvoreAvl **arv, int dado){
     *arv = (ArvoreAvl *)  malloc(sizeof(ArvoreAvl));
     (*arv)->esq = (*arv)->dir = NULL;
     (*arv)->dado = dado;
+    //verificarFator(&raiz);
 }
 
 void liberarMemoria(ArvoreAvl **arv){
@@ -138,6 +162,8 @@ void exibirArvore(ArvoreAvl **arv){
 int main(){
     ArvoreAvl *arvore;
     inicializarArvore(&arvore);
+    //Teste remocao 2
+    /*
     printf("Mandando inserir...\n");
     inserirArvore(&arvore, 8);
     inserirArvore(&arvore, 3);
@@ -156,6 +182,15 @@ int main(){
     removerElemento(&arvore, 8);
     printf("\nExibir apos remocao..\n");
     exibirArvore(&arvore);
+    */
+    inserirArvore(&arvore, 1);
+    inserirArvore(&arvore, 2);
+    inserirArvore(&arvore, 3);
+    inserirArvore(&arvore, 4);
+    inserirArvore(&arvore, 5);
+    inserirArvore(&arvore, 6);
+    inserirArvore(&arvore, 7);
+    verificarFator(&arvore);
     liberarMemoria(&arvore);
     return 0;
 }
